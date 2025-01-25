@@ -57,7 +57,7 @@ class MpfHardwareServiceStub(object):
         self.Ping = channel.unary_unary(
                 '/mpf.vpe.MpfHardwareService/Ping',
                 request_serializer=platform__pb2.EmptyRequest.SerializeToString,
-                response_deserializer=platform__pb2.EmptyRequest.FromString,
+                response_deserializer=platform__pb2.PingResponse.FromString,
                 _registered_method=True)
 
 
@@ -120,7 +120,7 @@ def add_MpfHardwareServiceServicer_to_server(servicer, server):
             'Ping': grpc.unary_unary_rpc_method_handler(
                     servicer.Ping,
                     request_deserializer=platform__pb2.EmptyRequest.FromString,
-                    response_serializer=platform__pb2.EmptyRequest.SerializeToString,
+                    response_serializer=platform__pb2.PingResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -257,7 +257,7 @@ class MpfHardwareService(object):
             target,
             '/mpf.vpe.MpfHardwareService/Ping',
             platform__pb2.EmptyRequest.SerializeToString,
-            platform__pb2.EmptyRequest.FromString,
+            platform__pb2.PingResponse.FromString,
             options,
             channel_credentials,
             insecure,
