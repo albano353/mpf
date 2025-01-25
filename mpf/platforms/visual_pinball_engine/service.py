@@ -110,3 +110,6 @@ class MpfHardwareService(platform_pb2_grpc.MpfHardwareServiceServicer):
         """Stop MPF."""
         self.machine.stop(reason="VPE exited.")
         return platform_pb2.EmptyResponse()
+    
+    async def Ping(self, request, context):
+        return platform_pb2.EmptyResponse();

@@ -7,6 +7,7 @@ service MpfHardwareService {
   rpc GetMachineDescription(EmptyRequest) returns (MachineDescription);
   rpc SendSwitchChanges(stream SwitchChanges) returns (EmptyResponse);
   rpc Quit(QuitRequest) returns (EmptyResponse);
+  rpc Ping(EmptyRequest) returns (EmptyRequest);
 }
 
 message EmptyRequest {}

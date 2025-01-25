@@ -54,6 +54,11 @@ class MpfHardwareServiceStub(object):
                 request_serializer=platform__pb2.QuitRequest.SerializeToString,
                 response_deserializer=platform__pb2.EmptyResponse.FromString,
                 _registered_method=True)
+        self.Ping = channel.unary_unary(
+                '/mpf.vpe.MpfHardwareService/Ping',
+                request_serializer=platform__pb2.EmptyRequest.SerializeToString,
+                response_deserializer=platform__pb2.EmptyRequest.FromString,
+                _registered_method=True)
 
 
 class MpfHardwareServiceServicer(object):
@@ -83,6 +88,12 @@ class MpfHardwareServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def Ping(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_MpfHardwareServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -105,6 +116,11 @@ def add_MpfHardwareServiceServicer_to_server(servicer, server):
                     servicer.Quit,
                     request_deserializer=platform__pb2.QuitRequest.FromString,
                     response_serializer=platform__pb2.EmptyResponse.SerializeToString,
+            ),
+            'Ping': grpc.unary_unary_rpc_method_handler(
+                    servicer.Ping,
+                    request_deserializer=platform__pb2.EmptyRequest.FromString,
+                    response_serializer=platform__pb2.EmptyRequest.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -215,6 +231,33 @@ class MpfHardwareService(object):
             '/mpf.vpe.MpfHardwareService/Quit',
             platform__pb2.QuitRequest.SerializeToString,
             platform__pb2.EmptyResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def Ping(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/mpf.vpe.MpfHardwareService/Ping',
+            platform__pb2.EmptyRequest.SerializeToString,
+            platform__pb2.EmptyRequest.FromString,
             options,
             channel_credentials,
             insecure,
