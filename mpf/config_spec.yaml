@@ -326,6 +326,7 @@ coils:
     enable_events: event_handler|event_handler:ms|None
     pulse_events: event_handler|event_handler:ms|None
     timed_enable_events: event_handler|event_handler:ms|None
+    parts: list|str|None
     platform_settings: single|dict|None
     psu: single|machine(psus)|default
     platform: single|str|None
@@ -957,6 +958,7 @@ lights:
     start_channel: single|str|None
     type: single|str|None
     subtype: single|str|None
+    parts: list|str|None
     platform: single|str|None
     platform_settings: single|dict|None
     fade_ms: single|ms|None
@@ -1448,6 +1450,7 @@ segment_displays:
     use_dots_for_commas: single|bool|false
     default_color: list|color|white
     default_transition_update_hz: single|float_or_token|30
+    parts: list|str|None
     platform_settings: single|dict|None
     platform: single|str|None
     update_method: single|str|None
@@ -1853,6 +1856,7 @@ switches:
     ignore_during_ball_search: single|bool|false
     events_when_activated: list|event_posted|None
     events_when_deactivated: list|event_posted|None
+    parts: list|str|None
     platform: single|str|None
     platform_settings: single|dict|None
     playfield: single|machine(playfields)|playfield
