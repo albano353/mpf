@@ -1,6 +1,11 @@
 """ZeDMD.
 
-Use libZeDMD
+Use PPUC
+https://github.com/PPUC 
+
+Use libZeDMD Python extension
+https://github.com/PPUC/libzedmd-python-pybind11-extension
+
 """
 import ctypes
 import pathlib
