@@ -248,6 +248,7 @@ class FASTDriver:
         else:
             self.log.debug("Received disable command for driver %s but reenabled autofire instead", self.number)
 
+    # pylint: disable-msg=too-many-statements
     def set_hardware_rule(self, mode, switch, coil_settings, **kwargs):  # noqa: MC0001
         """Write a hardware rule to the FAST controller for this driver."""
         self.log.debug("Setting hardware rule for driver %s. Mode: %s. Switch: %s. coil_settings: %s. kwargs: %s.",
