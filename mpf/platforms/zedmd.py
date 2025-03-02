@@ -12,6 +12,14 @@ import logging
 import ctypes
 import pathlib
 
+try:
+    import numpy
+except ImportError as e:
+    IMPORT_FAILED = e
+else:
+    IMPORT_FAILED = None    # type: ignore
+
+
 # Load ZeDMD library using ctypes
 libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_ext/libzedmd.so')
 
@@ -31,6 +39,10 @@ class ZeDmdPlatform(RgbDmdPlatform):
     __slots__ = ["device", "config"]
 
     def __init__(self, machine):
+        if IMPORT_FAILED:
+            raise AssertionError('Failed to load numpy. Did you install numpy ? '
+                                 'Try: "pip3 install numpy".') from IMPORT_FAILED
+        
         """Initialize ZeDMD."""
         super().__init__(machine)
 
