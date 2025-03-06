@@ -2398,15 +2398,12 @@ window:
     top: single|int|None
     no_window: single|bool|false
     effects: ignore
-    
+
 zedmd:
     __valid_in__: machine
     __type__: config_dict
-    old_cookie: single|bool|false
     console_log: single|enum(none,basic,full)|none
     file_log: single|enum(none,basic,full)|basic
-    brightness: single|float|0.5
     debug: single|bool|false
     width: single|int|32
     height: single|int|32
-    
