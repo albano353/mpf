@@ -1,7 +1,7 @@
 """ZeDMD.
 
 Use PPUC
-https://github.com/PPUC 
+https://github.com/PPUC
 
 Use libZeDMD Python extension
 https://github.com/PPUC/libzedmd-python-pybind11-extension
@@ -42,11 +42,11 @@ class ZeDmdPlatform(RgbDmdPlatform):
         if IMPORT_FAILED:
             raise AssertionError('Failed to load numpy. Did you install numpy ? '
                                  'Try: "pip3 install numpy".') from IMPORT_FAILED
-        
+
         """Initialize ZeDMD."""
         super().__init__(machine)
 
-        self.device = None 
+        self.device = None
         self.config = None
 
         self.config = self.machine.config_validator.validate_config(
@@ -55,11 +55,11 @@ class ZeDmdPlatform(RgbDmdPlatform):
         )
 
         self._configure_device_logging_and_debug('ZeDMD',self.config)
-        
+
 
     async def initialize(self):
         """Initialize platform."""
-        
+
 
     def stop(self):
         """Stop platform."""
@@ -90,7 +90,7 @@ class ZeDmdDevice(DmdPlatformInterface):
         self.config = config
         self.matrix = ZeDMD_ext()
         self.log = logging.getLogger('ZeDMDDevice')
-        
+
     def update(self, data):
         """Update DMD data."""
         image = Image.frombytes('RGB', (self.config["width"],self.config["height"]), data)
