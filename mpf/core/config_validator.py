@@ -335,7 +335,7 @@ class ConfigValidator:
 
                         raise ConfigFileError('Your config contains a value for "track" in '
                                               'setting "' + path_string + '", but "track" has '
-                                              'been replaced with "bus" in MPF 0.80.', 2, self.log.name)
+                                              'been replaced with "bus" in MPF 0.80.', 20, self.log.name)
 
                     else:
                         self.log.error('Your config contains a value for the '
