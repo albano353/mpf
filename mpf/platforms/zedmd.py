@@ -8,10 +8,9 @@ https://github.com/PPUC/libzedmd-python-pybind11-extension
 
 """
 import logging
-
 import ctypes
 import pathlib
-
+import platform
 try:
     import numpy
 except ImportError as e:
@@ -19,22 +18,37 @@ except ImportError as e:
 else:
     IMPORT_FAILED = None    # type: ignore
 
-
-# Load ZeDMD library using ctypes
-libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_ext/libzedmd.so')
-
-
-from mpf.platforms.zedmd_ext.extending import ZeDMD_ext
-
 from PIL import Image
 
 from mpf.core.platform import RgbDmdPlatform
 from mpf.platforms.interfaces.dmd_platform import DmdPlatformInterface
 
+# Load ZeDMD libraries
+if platform.machine in ("arm64", "aarch64"):
+  arch = "arm64"
+else: 
+  arch = "x64"
+if platform.system == "Windows":
+  libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/win_x64/zedmd64.dll')
+  from mpf.platforms.zedmd_lib.win_x64.extending import ZeDMD_ext
+elif platform.system == "Darwin":
+  libsockpp = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/macos_' + arch + '/libsockpp.dylib')
+  libserialport = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/macos_' + arch + '/libserialport.dylib')
+  libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/macos_' + arch + '/libzedmd.dylib')
+  if arch == "arm64":
+    from mpf.platforms.zedmd_lib.macos_arm64.extending import ZeDMD_ext
+  else:
+    from mpf.platforms.zedmd_lib.macos_x64.extending import ZeDMD_ext
+else:
+  libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/linux_' + arch + '/libzedmd.so')
+  if arch == "arm64":
+    from mpf.platforms.zedmd_lib.linux_arm64.extending import ZeDMD_ext
+  else:
+    from mpf.platforms.zedmd_lib.linux_x64.extending import ZeDMD_ext
 
 class ZeDmdPlatform(RgbDmdPlatform):
 
-    """ZeDMD."""
+    """ZeDmd"""
 
     __slots__ = ["device", "config"]
 
@@ -42,24 +56,18 @@ class ZeDmdPlatform(RgbDmdPlatform):
         if IMPORT_FAILED:
             raise AssertionError('Failed to load numpy. Did you install numpy ? '
                                  'Try: "pip3 install numpy".') from IMPORT_FAILED
-
         """Initialize ZeDMD."""
         super().__init__(machine)
-
         self.device = None
         self.config = None
-
         self.config = self.machine.config_validator.validate_config(
             config_spec='zedmd',
             source=self.machine.config.get('zedmd', {})
         )
-
         self._configure_device_logging_and_debug('ZeDMD',self.config)
-
 
     async def initialize(self):
         """Initialize platform."""
-
 
     def stop(self):
         """Stop platform."""
@@ -75,8 +83,6 @@ class ZeDmdPlatform(RgbDmdPlatform):
         if not self.device:
             self.device = ZeDmdDevice(self.config)
         return self.device
-
-
 
 # noinspection PyCallingNonCallable
 class ZeDmdDevice(DmdPlatformInterface):
@@ -105,12 +111,6 @@ class ZeDmdDevice(DmdPlatformInterface):
         new_brightness = round(brightness * 15)
         self.log.info("Set brightness = {0:d}".format(new_brightness))
         self.matrix.SetBrightness(new_brightness)
-
-        # If you prefer memorize brightness:
-        #if new_brightness != self.matrix.GetBrightness():
-        #  self.log.info("Set brightness = {0:d}".format(new_brightness))
-        #  self.matrix.SetBrightness(new_brightness)
-        #  self.matrix.SaveSettings()
 
     def stop(self):
         """Stop device."""
