@@ -14,9 +14,9 @@ import platform
 try:
     import numpy
 except ImportError as e:
-    IMPORT_FAILED = e
+    IMPORT_NUMPY_FAILED = e
 else:
-    IMPORT_FAILED = None    # type: ignore
+    IMPORT_NUMPY_FAILED = None    # type: ignore
 
 from PIL import Image
 
@@ -24,27 +24,33 @@ from mpf.core.platform import RgbDmdPlatform
 from mpf.platforms.interfaces.dmd_platform import DmdPlatformInterface
 
 # Load ZeDMD libraries
-if platform.machine in ("arm64", "aarch64"):
-  arch = "arm64"
-else: 
-  arch = "x64"
-if platform.system == "Windows":
-  libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/win_x64/zedmd64.dll')
-  from mpf.platforms.zedmd_lib.win_x64.extending import ZeDMD_ext
-elif platform.system == "Darwin":
-  libsockpp = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/macos_' + arch + '/libsockpp.dylib')
-  libserialport = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/macos_' + arch + '/libserialport.dylib')
-  libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/macos_' + arch + '/libzedmd.dylib')
-  if arch == "arm64":
-    from mpf.platforms.zedmd_lib.macos_arm64.extending import ZeDMD_ext
-  else:
-    from mpf.platforms.zedmd_lib.macos_x64.extending import ZeDMD_ext
+try:
+    if platform.machine in ("arm64", "aarch64"):
+        arch = "arm64"
+    else:
+        arch = "x64"
+    if platform.system == "Windows":
+        libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/win_x64/zedmd64.dll')
+        from mpf.platforms.zedmd_lib.win_x64.extending import ZeDMD_ext
+    elif platform.system == "Darwin":
+        lib_dir = '/zedmd_lib/macos_' + arch
+        libsockpp = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + lib_dir + '/libsockpp.dylib')
+        libserialport = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + lib_dir + '/libserialport.dylib')
+        libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + lib_dir + '/libzedmd.dylib')
+        if arch == "arm64":
+            from mpf.platforms.zedmd_lib.macos_arm64.extending import ZeDMD_ext
+        else:
+            from mpf.platforms.zedmd_lib.macos_x64.extending import ZeDMD_ext
+    else: #Linux
+        libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/linux_' + arch + '/libzedmd.so')
+        if arch == "arm64":
+            from mpf.platforms.zedmd_lib.linux_arm64.extending import ZeDMD_ext
+        else:
+            from mpf.platforms.zedmd_lib.linux_x64.extending import ZeDMD_ext
+except ImportError as e:
+    IMPORT_LIB_FAILED = e
 else:
-  libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/linux_' + arch + '/libzedmd.so')
-  if arch == "arm64":
-    from mpf.platforms.zedmd_lib.linux_arm64.extending import ZeDMD_ext
-  else:
-    from mpf.platforms.zedmd_lib.linux_x64.extending import ZeDMD_ext
+    IMPORT_LIB_FAILED = None    # type: ignore
 
 class ZeDmdPlatform(RgbDmdPlatform):
 
@@ -53,9 +59,11 @@ class ZeDmdPlatform(RgbDmdPlatform):
     __slots__ = ["device", "config"]
 
     def __init__(self, machine):
-        if IMPORT_FAILED:
+        if IMPORT_NUMPY_FAILED:
             raise AssertionError('Failed to load numpy. Did you install numpy ? '
-                                 'Try: "pip3 install numpy".') from IMPORT_FAILED
+                                 'Try: "pip3 install numpy".') from IMPORT_NUMPY_FAILED
+        if IMPORT_LIB_FAILED:
+            raise AssertionError('Failed to load ZeDMD libraries.') from IMPORT_LIB_FAILED
         """Initialize ZeDMD."""
         super().__init__(machine)
         self.device = None
