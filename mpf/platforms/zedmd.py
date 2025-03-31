@@ -25,25 +25,26 @@ from mpf.platforms.interfaces.dmd_platform import DmdPlatformInterface
 
 # Load ZeDMD libraries
 try:
+    DIR_PATH = str(pathlib.Path(__file__).parent.resolve())
     if platform.machine in ("arm64", "aarch64"):
-        arch = "arm64"
+        ARCH = "arm64"
     else:
-        arch = "x64"
-    if platform.system == "Windows":
-        libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/win_x64/zedmd64.dll')
+        ARCH = "x64"
+    if platform.system() == "Windows":
+        libzedmd = ctypes.CDLL(DIR_PATH + '/zedmd_lib/win_x64/zedmd64.dll')
         from mpf.platforms.zedmd_lib.win_x64.extending import ZeDMD_ext
-    elif platform.system == "Darwin":
-        lib_dir = '/zedmd_lib/macos_' + arch
-        libsockpp = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + lib_dir + '/libsockpp.dylib')
-        libserialport = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + lib_dir + '/libserialport.dylib')
-        libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + lib_dir + '/libzedmd.dylib')
-        if arch == "arm64":
+    elif platform.system() == "Darwin":
+        LIB_DIR = '/zedmd_lib/macos_' + ARCH
+        libsockpp = ctypes.CDLL(DIR_PATH + LIB_DIR + '/libsockpp.dylib')
+        libserialport = ctypes.CDLL(DIR_PATH + LIB_DIR + '/libserialport.dylib')
+        libzedmd = ctypes.CDLL(DIR_PATH + LIB_DIR + '/libzedmd.dylib')
+        if ARCH == "arm64":
             from mpf.platforms.zedmd_lib.macos_arm64.extending import ZeDMD_ext
         else:
             from mpf.platforms.zedmd_lib.macos_x64.extending import ZeDMD_ext
-    else: #Linux
-        libzedmd = ctypes.CDLL(str(pathlib.Path(__file__).parent.resolve()) + '/zedmd_lib/linux_' + arch + '/libzedmd.so')
-        if arch == "arm64":
+    else:    # platform.system() == Linux
+        libzedmd = ctypes.CDLL(DIR_PATH + '/zedmd_lib/linux_' + ARCH + '/libzedmd.so')
+        if ARCH == "arm64":
             from mpf.platforms.zedmd_lib.linux_arm64.extending import ZeDMD_ext
         else:
             from mpf.platforms.zedmd_lib.linux_x64.extending import ZeDMD_ext
@@ -52,19 +53,20 @@ except ImportError as e:
 else:
     IMPORT_LIB_FAILED = None    # type: ignore
 
+
 class ZeDmdPlatform(RgbDmdPlatform):
 
-    """ZeDmd"""
+    """ZeDmd."""
 
     __slots__ = ["device", "config"]
 
     def __init__(self, machine):
+        """Initialize ZeDmd."""
         if IMPORT_NUMPY_FAILED:
             raise AssertionError('Failed to load numpy. Did you install numpy ? '
                                  'Try: "pip3 install numpy".') from IMPORT_NUMPY_FAILED
         if IMPORT_LIB_FAILED:
             raise AssertionError('Failed to load ZeDMD libraries.') from IMPORT_LIB_FAILED
-        """Initialize ZeDMD."""
         super().__init__(machine)
         self.device = None
         self.config = None
@@ -72,7 +74,7 @@ class ZeDmdPlatform(RgbDmdPlatform):
             config_spec='zedmd',
             source=self.machine.config.get('zedmd', {})
         )
-        self._configure_device_logging_and_debug('ZeDMD',self.config)
+        self._configure_device_logging_and_debug('ZeDMD', self.config)
 
     async def initialize(self):
         """Initialize platform."""
@@ -91,27 +93,30 @@ class ZeDmdPlatform(RgbDmdPlatform):
         if not self.device:
             self.device = ZeDmdDevice(self.config)
         return self.device
+    
 
 # noinspection PyCallingNonCallable
 class ZeDmdDevice(DmdPlatformInterface):
 
     """A ZeDmd device."""
 
-    __slots__ = ["config","log","matrix"]
+    __slots__ = ["config", "log", "matrix"]
 
     def __init__(self, config):
         """Initialize ZeDmd device."""
         self.config = config
         self.matrix = ZeDMD_ext()
         self.log = logging.getLogger('ZeDMDDevice')
+        self.log.debug('Numpy version : ' + numpy.__version__)
 
     def update(self, data):
         """Update DMD data."""
-        image = Image.frombytes('RGB', (self.config["width"],self.config["height"]), data)
+        image = Image.frombytes('RGB', (self.config["width"], self.config["height"]), data)
         self.matrix.RenderRgb888(image)
 
     def set_brightness(self, brightness):
         """Set brightness.
+        
         Range is [0.0 ... 1.0].
         """
         if brightness < 0.0 or brightness > 1.0:
