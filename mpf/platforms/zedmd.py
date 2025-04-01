@@ -107,7 +107,7 @@ class ZeDmdDevice(DmdPlatformInterface):
         self.config = config
         self.matrix = ZeDMD_ext()
         self.log = logging.getLogger('ZeDMDDevice')
-        self.log.debug('Numpy version : ' + numpy.__version__)
+        self.log.debug('Numpy version : %s', numpy.__version__)
 
     def update(self, data):
         """Update DMD data."""
