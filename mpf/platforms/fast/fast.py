@@ -79,7 +79,7 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
         elif self.machine_type == 'no_net':
             pass
         else:
-            self.raise_config_error(f'Unknown machine_type "{self.machine_type}" configured fast.', 6)
+            self.raise_config_error(f'Unknown machine_type "{self.machine_type}" could not be configured by FAST.', 6)
 
         # Even though System11 uses ticks, that's handled on the Overlay and not needed here.
         self.features['tickless'] = True
@@ -663,9 +663,8 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
 
         if device_num > devices_per_port:
             if name:
-                # TODO get a final error code
                 self.raise_config_error(f"Device number {device_num} exceeds the number of devices per port "
-                                        f"({devices_per_port}) for LED {name}", 8)
+                                        f"({devices_per_port}) for LED {name}", 9)
             else:
                 raise AssertionError(f"Device number {device_num} exceeds the number of devices per port "
                                      f"({devices_per_port})")
