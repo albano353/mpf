@@ -497,14 +497,29 @@ class VirtualLight(LightPlatformInterface):
 
     def is_successor_of(self, other):
         """Return true if the other light has the same number string plus the suffix '+1'."""
-        return self.number == other.number + "+1"
+        self_addr, self_offset = VirtualLight.split_light_address(self.number)
+        other_addr, other_offset = VirtualLight.split_light_address(other.number)
+        return self_addr == other_addr and int(self_offset) == int(other_offset) + 1
 
     def get_successor_number(self):
         """Return the number with the suffix '+1'.
 
         As there is not real number format for virtual is this is all we can do here.
         """
-        return self.number + "+1"
+        addr, offset = VirtualLight.split_light_address(self.number)
+        return f"{addr}+{int(offset) + 1}"
+
+    @staticmethod
+    def split_light_address(address):
+        """Return a light address (without 'led-' prefix) and an offset number as a list.
+
+        Used when calculating relative light addresses,
+        e.g. led-2-0-1 -> led-2-0-1+1 -> led-2-0-1+2
+        """
+        address = address.replace("led-", "")
+        if "+" in address:
+            return address.rsplit("+", 1)
+        return (address, '0')
 
     def __lt__(self, other):
         """Order lights by string."""
