@@ -7,7 +7,7 @@ mode:
   use_wait_queue: true
 
 # Instructions on how to use this mode:
-# https://missionpinball.org/game_logic/high_scores
+# https://missionpinball.org/latest/game_logic/high_scores
 
 high_score:
   enter_initials_timeout: 60
@@ -26,6 +26,17 @@ high_score:
       - JK: 1337
       - QC: 42
       - MPF: 23
+
+event_player:
+  sw_left_flipper_active:
+    text_input:
+      action: left
+  sw_right_flipper_active:
+    text_input:
+      action: right
+  sw_start_active:
+    text_input:
+      action: select
 
 slide_player:
   high_score_enter_initials:
