@@ -662,13 +662,6 @@ fast_exp:
     console_log: single|enum(none,basic,full)|none
     file_log: single|enum(none,basic,full)|basic
     boards: dict|str:subconfig(fast_exp_board)|
-fast_exp_int:
-    port: list|str|auto
-    baud: single|int|921600
-    debug: single|bool|false
-    console_log: single|enum(none,basic,full)|none
-    file_log: single|enum(none,basic,full)|basic
-    boards: dict|str:subconfig(fast_exp_board)|
 fast_exp_board:
     model: single|str|  # FP-EXP-0071, etc.
     address: single|str|None  # overrides the lookup address, useful for partner-specific firmware
