@@ -251,7 +251,7 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
                 from mpf.platforms.fast.communicators.exp import \
                     FastExpCommunicator
                 communicator = FastExpCommunicator(platform=self, processor=port, config=config)
-                self.serial_connections['exp_int'] = communicator                
+                self.serial_connections['exp_int'] = communicator
             elif port == 'seg':
                 from mpf.platforms.fast.communicators.seg import \
                     FastSegCommunicator
