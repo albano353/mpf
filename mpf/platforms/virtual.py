@@ -119,7 +119,7 @@ class VirtualHardwarePlatform(AccelerometerPlatform, I2cPlatform, ServoPlatform,
                         if " " in switch_name:
                             self.raise_config_error("MPF no longer supports lists separated by space in "
                                                     "virtual_platform_start_active_switches. Please separate "
-                                                    "switches by comma: {}.".format(switch_name), 1)
+                                                    "switches by comma: {}.".format(switch_name), 2)
                         else:
                             self.raise_config_error("Switch {} used in virtual_platform_start_active_switches was not "
                                                     "found in switches section.".format(switch_name), 1)
