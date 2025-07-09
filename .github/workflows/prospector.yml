@@ -14,7 +14,8 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.12
+          # Ubuntu can't run 3.12 because Pillow dependencies.
+          python-version: 3.11
 
       - name: Install MPF
         run: |
