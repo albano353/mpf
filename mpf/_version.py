@@ -19,6 +19,9 @@ __short_version__ = '0.80'
 __bcp_version__ = '1.1'
 '''The version of BCP this build of MPF uses.'''
 
+__gmc_version__ = '0.1.3'
+'''The version of GMC this build of MPF requires.'''
+
 __config_version__ = '6'
 '''The config file version this build of MPF uses.'''
 
