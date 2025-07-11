@@ -45,7 +45,7 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
                  "io_boards", "io_boards_by_name", "switches_initialized",
                  "drivers_initialized", "audio_interface"]
 
-    port_types = ['net', 'exp', 'aud', 'dmd', 'rgb', 'seg', 'emu']
+    port_types = ['net', 'exp', 'exp_int', 'aud', 'dmd', 'rgb', 'seg', 'emu']
 
     def __init__(self, machine):
         """Initialize FAST hardware platform.
@@ -247,6 +247,11 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
                     FastExpCommunicator
                 communicator = FastExpCommunicator(platform=self, processor=port, config=config)
                 self.serial_connections['exp'] = communicator
+            elif port == 'exp_int':
+                from mpf.platforms.fast.communicators.exp import \
+                    FastExpCommunicator
+                communicator = FastExpCommunicator(platform=self, processor=port, config=config)
+                self.serial_connections['exp_int'] = communicator
             elif port == 'seg':
                 from mpf.platforms.fast.communicators.seg import \
                     FastSegCommunicator
