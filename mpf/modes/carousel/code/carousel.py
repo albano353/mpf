@@ -101,10 +101,12 @@ class Carousel(Mode):
                                  carousel=self.name,
                                  direction=direction,
                                  item=self._get_highlighted_item())
-        '''event (carousel_name)_(item)_highlighted
+        '''event item_highlighted
             desc: Player highlighted an item in a carousel. Mostly used to play shows or trigger slides.
             args:
+               carousel: The name of the carousel that posted this event.
                direction: The direction the carousel is moving. Either forwards or backwards. None on mode start.
+               item: The name of the item that is now highlighted.
             '''
 
     def _get_available_items(self):
