@@ -2,7 +2,7 @@
 name = "mpf"
 description = "The Mission Pinball Framework (MPF)"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.8,<3.13"
 license = {text = "MIT"}
 authors = [{ name = "The Mission Pinball Framework Team", email = "brian@missionpinball.org"}]
 keywords = ["pinball"]
