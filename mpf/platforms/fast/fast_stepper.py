@@ -1,4 +1,4 @@
-"""Fast servo implementation."""
+"""Fast stepper implementation."""
 
 import asyncio
 
@@ -19,7 +19,7 @@ class FastStepper(StepperPlatformInterface):
                  "_is_moving", "_default_speed"]
 
     def __init__(self, breakout_board, port, config):
-        """Initialize servo."""
+        """Initialize stepper."""
         self.config = config
         self.exp_connection = breakout_board.communicator
 
@@ -31,6 +31,16 @@ class FastStepper(StepperPlatformInterface):
         self._is_moving = False
         self._default_speed = Util.int_to_hex_string(self.config['default_speed'], True)
 
+        self.write_config_to_stepper()
+
+    def write_config_to_stepper(self):
+        """Send the stepper configuration to the platform."""
+        max_ms = f"{self.config['max_ms']:02X}"
+
+        self.exp_connection.send_with_confirmation(
+            f"EM@{self.base_address}:{self.stepper_index},2,{max_ms},258,0",
+            'EM:P')
+        
     def home(self, direction):
         """Return the stepper to its home position."""
         if direction != 'counterclockwise':
@@ -53,7 +63,7 @@ class FastStepper(StepperPlatformInterface):
             self._send_command('MS')
 
     def move_rel_pos(self, position, speed=None):
-        """Move the servo a relative number of steps position."""
+        """Move the stepper a relative number of steps position."""
         if not position:
             return
 

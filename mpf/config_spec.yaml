@@ -758,6 +758,7 @@ fast_servos:
 fast_stepper_settings:
     __valid_in__: machine                 # todo add to validator
     default_speed: single|int|600
+    max_ms: single|ms|3000  # 65535 max    
 file_shows:
     __valid_in__: machine, mode                      # todo add to validator
     __type__: config_dict
