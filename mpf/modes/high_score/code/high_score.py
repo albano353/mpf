@@ -102,12 +102,10 @@ class HighScore(AsyncMode):
         for category, entries in self.high_score_config['categories'].items():
             try:
                 for position, (label, (name, value, *hs_vars)) in (
-                        enumerate(zip(entries,
-                                      self.high_scores[category]))):
+                        enumerate(zip(entries, self.high_scores[category]))):
 
-                    self.machine.variables.set_machine_var(
-                        name=category + str(position + 1) + '_label',
-                        value=label)
+                    var_name_base = category + str(position + 1) + "_"
+                    self.machine.variables.set_machine_var(name=var_name_base + 'label', value=label)
 
                     '''machine_var: (high_score_category)(position)_label
 
@@ -119,9 +117,7 @@ class HighScore(AsyncMode):
 
                     '''
 
-                    self.machine.variables.set_machine_var(
-                        name=category + str(position + 1) + '_name',
-                        value=name)
+                    self.machine.variables.set_machine_var(name=var_name_base + 'name', value=name)
 
                     '''machine_var: (high_score_category)(position)_name
 
@@ -130,9 +126,7 @@ class HighScore(AsyncMode):
 
                     '''
 
-                    self.machine.variables.set_machine_var(
-                        name=category + str(position + 1) + '_value',
-                        value=value)
+                    self.machine.variables.set_machine_var(name=var_name_base + 'value', value=value)
 
                     '''machine_var: (high_score_category)(position)_value
 
@@ -143,9 +137,7 @@ class HighScore(AsyncMode):
 
                     if len(hs_vars) > 0:
                         for k, v in hs_vars[0].items():
-                            self.machine.variables.set_machine_var(
-                                name=category + str(position + 1) + '_' + str(k),
-                                value=v)
+                            self.machine.variables.set_machine_var(name=var_name_base + str(k), value=v)
 
                     '''machine_var: (high_score_category)(position)_(variable)
 
@@ -249,9 +241,7 @@ class HighScore(AsyncMode):
                       ", Value: %s", player, award_label, value)
 
         self.machine.events.post('high_score_enter_initials',
-                                 award=award_label,
-                                 player_num=player.number,
-                                 value=value)
+                                 award=award_label, player_num=player.number, value=value)
 
         event_result = await asyncio.wait_for(
             self.machine.events.wait_for_event("text_input_high_score_complete"),
@@ -276,23 +266,16 @@ class HighScore(AsyncMode):
         if not self.high_score_config['award_slide_display_time']:
             return
 
-        self.machine.events.post(
-            'high_score_award_display',
-            player_name=player_name,
-            award=award,
-            value=value)
-        self.machine.events.post(
-            '{}_award_display'.format(award),
-            player_name=player_name,
-            award=award,
-            value=value)
-        self.machine.events.post(
-            '{}_award_display'.format(category_name),
-            player_num=player_num,
-            player_name=player_name,
-            category_name=category_name,
-            award=award,
-            value=value)
+        self.machine.events.post('high_score_award_display',
+                                 player_name=player_name, award=award, value=value)
+
+        self.machine.events.post('{}_award_display'.format(award),
+                                 player_name=player_name, award=award, value=value)
+
+        self.machine.events.post('{}_award_display'.format(category_name),
+                                 player_name=player_name, award=award, value=value,
+                                 player_num=player_num, category_name=category_name)
+
         await asyncio.sleep(self.high_score_config['award_slide_display_time'] / 1000)
 
     def _write_scores_to_disk(self) -> None:
