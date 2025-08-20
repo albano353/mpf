@@ -42,11 +42,16 @@ slide_player:
   high_score_enter_initials:
     high_score:
         action: play
-  # TODO: slide not yet available, but comment section was updated per event name changes
-  #   high_score_award:
-  #       action: remove
-  # high_score_award_display:
-  #   high_score_award:
-  #       action: play
-  #   high_score_enter_initials:
-  #       action: remove
+    high_score_award:
+        action: remove
+  high_score_award_display:
+    high_score_award:
+        action: play
+    high_score:
+        action: remove
+
+  # When a player wins multiple awards, we only prompt for initials
+  # on the first. For the rest, we must update the award slide in place.
+  high_score_award_display.1:
+    high_score_award:
+        action: update
