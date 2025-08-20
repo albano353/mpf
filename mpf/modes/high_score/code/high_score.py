@@ -219,19 +219,21 @@ class HighScore(AsyncMode):
 
     def _assign_vars(self, category_name, player):
         """Define all vars that are for the given category, and assign their values."""
-        # create dictionary of the variable name and its value, then load it for the category
         player_num_index = player.number - 1
-        var_dict = dict()
+        var_dict = dict()  # store the results of var lookups for the player entry being saved
+
         j = 0
-        while j < len(self.vars[category_name]) and bool(self.vars[category_name]):
-            if 'player' in self.vars[category_name][j][0]:
-                var_dict[self.vars[category_name][j][0] + '_' + self.vars[category_name][j][1]] \
-                    = self.machine.game.player_list[player_num_index][self.vars[category_name][j][1]]
-            else:
-                var_dict[self.vars[category_name][j][0] + '_' + self.vars[category_name][j][1]] \
-                    = self.machine.variables.get_machine_var(self.vars[category_name][j][1])
+        category_var_configuration = self.vars[category_name]
+        while j < len(category_var_configuration) and bool(category_var_configuration):
+            variable_type = category_var_configuration[j][0]
+            variable_name = category_var_configuration[j][1]
+            dict_key = variable_type + '_' + variable_name
+            if 'player' in variable_type:
+                var_dict[dict_key] = self.machine.game.player_list[player_num_index][variable_name]
+            else:  # else is machine variable
+                var_dict[dict_key] = self.machine.variables.get_machine_var(variable_name)
             j += 1
-        # return the dictionary of items for this specific player and category entry
+
         return var_dict
 
     # pylint: disable-msg=too-many-arguments
