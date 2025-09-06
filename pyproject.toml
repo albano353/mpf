@@ -33,7 +33,7 @@ dependencies = [
     "setuptools ~= 72.2.0",  # Nov 16, 2024,
     "sortedcontainers == 2.4.0",  # Oct 4 2023, used by platform batch light system
     "terminaltables == 3.1.10",  # Oct 4 2023, used for the service CLI
-    "Pillow == 10.4.0"  # Early 10.x had issues installing, mid 10.x may have had issues with kivy
+    "Pillow == 11.3.0"  # Sep 5, 2025, 10.x does not support python 3.14
     ]
 dynamic = ["version"]
 
