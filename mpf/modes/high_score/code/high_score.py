@@ -149,11 +149,19 @@ class HighScore(AsyncMode):
             except KeyError:
                 self.high_scores[category] = list()
 
+    def _get_players(self):
+        return self.machine.game.player_list
+
     # pylint: disable-msg=too-many-nested-blocks
     async def _run(self) -> None:
         """Run high score mode."""
-        if not self.machine.game or not self.machine.game.player_list:
-            self.warning_log("High Score started but there was no game. Will not start.")
+        if not self.machine.game:
+            self.warning_log("High Score starting but there is no game. Mode will not start.")
+            return
+
+        players = self._get_players()
+        if not players:
+            self.warning_log("High Score starting but there are no players. Mode will not start.")
             return
 
         new_high_score_list = {}
@@ -170,7 +178,7 @@ class HighScore(AsyncMode):
                     new_list.append(category_high_scores)
 
             # add the players scores from this game to the list
-            for player in self.machine.game.player_list:
+            for player in players:
                 # if the player var is 0, don't add it. This prevents
                 # values of 0 being added to blank high score lists
                 if player[category_name]:
@@ -188,7 +196,7 @@ class HighScore(AsyncMode):
                     # ask player for initials if we do not know them
                     if not player.initials:
                         try:
-                            player.initials = await self._ask_player_for_initials(player, award_names[i],
+                            player.initials = await self._ask_player_for_initials(player.number, award_names[i],
                                                                                   value, category_name)
                         except asyncio.TimeoutError:
                             del new_list[i]
@@ -197,7 +205,7 @@ class HighScore(AsyncMode):
                     # get vars from config
                     self._load_vars()
                     if category_name in self.vars:
-                        var_dict = self._assign_vars(category_name, player)
+                        var_dict = self._assign_vars(category_name, player.number)
                         # add high score with variables
                         new_list[i] = [player.initials, value, var_dict]
                     else:
@@ -217,10 +225,10 @@ class HighScore(AsyncMode):
         self._write_scores_to_disk()
         self._create_machine_vars()
 
-    def _assign_vars(self, category_name, player):
+    def _assign_vars(self, category_name, player_number):
         """Define all vars that are for the given category, and assign their values."""
-        player_num_index = player.number - 1
         var_dict = dict()  # store the results of var lookups for the player entry being saved
+        player_index = player_number - 1
 
         j = 0
         category_var_configuration = self.vars[category_name]
@@ -229,7 +237,7 @@ class HighScore(AsyncMode):
             variable_name = category_var_configuration[j][1]
             dict_key = variable_type + '_' + variable_name
             if 'player' in variable_type:
-                var_dict[dict_key] = self.machine.game.player_list[player_num_index][variable_name]
+                var_dict[dict_key] = self._get_players()[player_index][variable_name]
             else:  # else is machine variable
                 var_dict[dict_key] = self.machine.variables.get_machine_var(variable_name)
             j += 1
@@ -237,13 +245,13 @@ class HighScore(AsyncMode):
         return var_dict
 
     # pylint: disable-msg=too-many-arguments
-    async def _ask_player_for_initials(self, player: Player, award_label: str, value: int, category_name: str) -> str:
+    async def _ask_player_for_initials(self, player_number: int, award_label: str, value: int, category_name: str) -> str:
         """Show text widget to ask player for initials."""
         self.info_log("New high score. Player: %s, award_label: %s"
-                      ", Value: %s", player, award_label, value)
+                      ", Value: %s", player_number, award_label, value)
 
         self.machine.events.post('high_score_enter_initials',
-                                 award=award_label, player_num=player.number, value=value)
+                                 award=award_label, player_num=player_number, value=value)
 
         event_result = await asyncio.wait_for(
             self.machine.events.wait_for_event("text_input_high_score_complete"),
