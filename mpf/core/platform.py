@@ -19,6 +19,7 @@ if MYPY:   # pragma: no cover
     from mpf.platforms.interfaces.switch_platform_interface import SwitchPlatformInterface  # pylint: disable-msg=cyclic-import,unused-import; # noqa
     from mpf.platforms.interfaces.light_platform_interface import LightPlatformInterface    # pylint: disable-msg=cyclic-import,unused-import; # noqa
     from mpf.platforms.interfaces.servo_platform_interface import ServoPlatformInterface    # pylint: disable-msg=cyclic-import,unused-import; # noqa
+    from mpf.platforms.interfaces.shaker_platform_interface import ShakerPlatformInterface    # pylint: disable-msg=cyclic-import,unused-import; # noqa
     from mpf.platforms.interfaces.segment_display_platform_interface import SegmentDisplayPlatformInterface     # pylint: disable-msg=cyclic-import,unused-import; # noqa
     from mpf.platforms.interfaces.hardware_sound_platform_interface import HardwareSoundPlatformInterface   # pylint: disable-msg=cyclic-import,unused-import; # noqa
     from mpf.platforms.interfaces.stepper_platform_interface import StepperPlatformInterface    # pylint: disable-msg=cyclic-import,unused-import; # noqa
@@ -60,6 +61,7 @@ class BasePlatform(LogMixin, metaclass=abc.ABCMeta):
         self.features['has_segment_displays'] = False
         self.features['has_hardware_sound_systems'] = True
         self.features['has_steppers'] = False
+        self.features['has_shakers'] = False
         self.features['allow_empty_numbers'] = False
         self.features['hardware_eos_repulse'] = False
 
@@ -400,6 +402,53 @@ class StepperPlatform(BasePlatform, metaclass=abc.ABCMeta):
         ----
             number: Number of the smart servo
             config: Config for this stepper.
+        """
+        raise NotImplementedError
+
+
+class ShakerPlatform(BasePlatform, metaclass=abc.ABCMeta):
+
+    """Baseclass for shaker platforms in MPF."""
+
+    __slots__ = []  # type: List[str]
+
+    def __init__(self, machine):
+        """Add shaker feature."""
+        super().__init__(machine)
+        self.features['has_shakers'] = True
+
+    @classmethod
+    def get_stepper_config_section(cls) -> Optional[str]:
+        """Return config section for additional stepper config items."""
+        return None
+
+    def validate_shaker_section(self, shaker: "Shaker", config: dict) -> dict:
+        """Validate a shaker config for platform.
+
+        Args:
+        ----
+            shaker: Shaker to validate.
+            config: Config to validate.
+
+        Returns: Validated config.
+        """
+        if self.get_shaker_config_section():
+            spec = self.get_shaker_config_section()    # pylint: disable-msg=assignment-from-none
+            config = shaker.machine.config_validator.validate_config(spec, config, shaker.name)
+        elif config:
+            raise AssertionError("No platform_config supported but not empty {} for shaker {}".
+                                 format(config, shaker.name))
+
+        return config
+
+    @abc.abstractmethod
+    async def configure_shaker(self, number: str, config: dict) -> "ShakerPlatformInterface":
+        """Configure a shaker device in platform.
+
+        Args:
+        ----
+            number: Number of the shaker
+            config: Config for this shaker.
         """
         raise NotImplementedError
 
