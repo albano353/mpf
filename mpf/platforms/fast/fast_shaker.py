@@ -25,20 +25,22 @@ class FastShaker(ShakerPlatformInterface):
 
         #self.exp_connection.register_processor('MS:', self.base_address, self.shaker_index, self._process_ms)
 
-    def pulse(self, duration, power):
+    def pulse(self, duration_secs, power):
         """Pulse the shaker at the specified power for the specified duration."""
-        if not power or not duration:
+        if not power or not duration_secs:
+            self.log.debug("Shaker pulse called with no power or duration, will not shake.")
             return
 
         base_command = "MF"
-        hex_power = Util.int_to_hex_string(power, True)
-        hex_duration = Util.int_to_hex_string(duration, True)
-        self.log.info("Pulsing shaker index %s: for %sms with power %s", self.shaker_index, duration, power)
+        hex_power = Util.float_to_hex(power)
+        hex_duration = Util.int_to_hex_string(duration_secs * 1000, True)
+        self.log.debug("Pulsing shaker index %s: for %s seconds with power %s", self.shaker_index, duration_secs, power)
 
         self._send_command(base_command, [hex_duration, hex_power])
 
     def stop(self):
         """Called during shutdown."""
+        self.log.debug("Stopping shaker")
         self._send_command("MC")
 
     def _send_command(self, base_command, payload=None):

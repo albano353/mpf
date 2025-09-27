@@ -16,14 +16,14 @@ class ShakerPlatformInterface(metaclass=abc.ABCMeta):
     __slots__ = []  # type: List[str]
 
     @abc.abstractmethod
-    def enable(self, duration_ms=None, power=None):
+    def pulse(self, duration_secs=None, power=None):
         """Enable the shaker for specified duration and power level."""
         raise NotImplementedError
 
-    @abc
-    def disable(self):
+    @abc.abstractmethod
+    def stop(self):
         """Stop this shaker.
 
-        This should disable the output or home the servo.
+        This should stop the output and end shaking
         """
         raise NotImplementedError

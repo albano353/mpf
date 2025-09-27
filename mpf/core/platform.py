@@ -12,6 +12,7 @@ from mpf.core.utility_functions import Util
 
 MYPY = False
 if MYPY:   # pragma: no cover
+    from mpf.devices.shaker import Shaker   # pylint: disable-msg=cyclic-import,unused-import
     from mpf.devices.switch import Switch   # pylint: disable-msg=cyclic-import,unused-import
     from mpf.devices.stepper import Stepper     # pylint: disable-msg=cyclic-import,unused-import
     from mpf.devices.servo import Servo     # pylint: disable-msg=cyclic-import,unused-import

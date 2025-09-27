@@ -11,10 +11,8 @@ from mpf.platforms.interfaces.driver_platform_interface import PulseSettings, Ho
 
 MYPY = False
 if MYPY:    # pragma: no cover
-    from mpf.core.platform import DriverPlatform, LightsPlatform    # pylint: disable-msg=cyclic-import,unused-import
-    from mpf.platforms.interfaces.driver_platform_interface import DriverPlatformInterface  # pylint: disable-msg=cyclic-import,unused-import; # noqa
-    from mpf.platforms.interfaces.light_platform_interface import LightPlatformInterface    # pylint: disable-msg=cyclic-import,unused-import; # noqa
-
+    from mpf.core.platform import ShakerPlatform    # pylint: disable-msg=cyclic-import,unused-import
+    from mpf.platforms.interfaces.shaker_platform_interface import ShakerPlatformInterface  # pylint: disable-msg=cyclic-import,unused-import
 
 class Shaker(SystemWideDevice):
 
@@ -24,35 +22,45 @@ class Shaker(SystemWideDevice):
     collection = 'shakers'
     class_label = 'shaker'
 
-    __slots__ = ["hw_driver", "type", "__dict__"]
+    __slots__ = ["hw_shaker", "type", "__dict__"]
 
     def __init__(self, machine: MachineController, name: str) -> None:
         """Initialize digital output."""
-        self.hw_driver = None           # type: Optional[Union[DriverPlatformInterface, LightPlatformInterface]]
-        self.platform = None            # type: Optional[Union[DriverPlatform, LightsPlatform]]
+        self.hw_shaker = None           # type: Optional[ShakerPlatformInterface]
+        self.platform = None            # type: Optional[ShakerPlatform]
         super().__init__(machine, name)
         self.delay = DelayManager(self.machine)
 
     async def _initialize(self):
         await super()._initialize()
-        self.platform = self.machine.get_platform_sections('stepper_controllers', self.config['platform'])
+        self.platform = self.machine.get_platform_sections('shaker_controllers', self.config['platform'])
         self.platform.assert_has_feature("shakers")
-        for event, config in self.config['pulse_events'].items():
+        self.hw_shaker = await self.platform.configure_shaker(self.config['number'], self.config['platform_settings'])
+        for event, config in self.config['control_events'].items():
+            if config.get('action') == 'stop':
+                self.machine.events.add_handler(event, self.event_stop)
+                continue
             self.machine.events.add_handler(event,
                                             self.event_pulse,
                                             power=config.get('power'),
-                                            duration=config['duration'])
+                                            duration=config['duration'].evaluate({}))
 
-    @event_handler(2)
-    def event_pulse(self, power=None, duration=None, **kwargs):
-        """Handle pulse control event."""
+    @event_handler(1)
+    def event_pulse(self, duration=None, power=None, **kwargs):
         del kwargs
-        self.pulse(power, duration)
+        self.pulse(duration, power)
 
-    def pulse(self, power=None, duration=None):
-        if not power:
+    def pulse(self, duration=None, power=None):
+        if power is None:
             power = self.config['default_power']
         if not duration:
             raise AssertionError("Shaker pulse called with no duration value")
-        self.hw_driver.pulse(power, duration)
+        self.hw_shaker.pulse(duration, power)
 
+    @event_handler(2)
+    def event_stop(self, **kwargs):
+        del kwargs
+        self.stop()
+
+    def stop(self):
+        self.hw_shaker.stop()
