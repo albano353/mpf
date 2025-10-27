@@ -27,7 +27,7 @@ jobs:
         - os: windows-latest
           python-version: 3.13
         - os: windows-latest
-          python-version: 3.14.0-rc.2
+          python-version: 3.14
 
         - os: ubuntu-latest
           python-version: "3.10"
@@ -38,7 +38,7 @@ jobs:
         - os: ubuntu-latest
           python-version: 3.13
         - os: ubuntu-latest
-          python-version: 3.14.0-rc.2
+          python-version: 3.14
 
         - os: macos-latest
           python-version: "3.10"
@@ -49,7 +49,7 @@ jobs:
         - os: macos-latest
           python-version: 3.13
         - os: macos-latest
-          python-version: 3.14.0-rc.2
+          python-version: 3.14
 
     steps:
       - name: Checkout MPF
