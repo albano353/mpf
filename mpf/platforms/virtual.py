@@ -141,6 +141,7 @@ class VirtualHardwarePlatform(AccelerometerPlatform, I2cPlatform, ServoPlatform,
         return self.hw_switches
 
     async def configure_shaker(self, number: str, config: Dict):
+        """Configure a shaker in platform."""
         del config
         return VirtualShaker(number)
 
@@ -644,14 +645,15 @@ class VirtualDriver(DriverPlatformInterface):
                        pulse_settings.duration, hold_settings.duration)
         self.state = "timed_enabled_" + str(pulse_settings.duration) + "_" + str(hold_settings.duration)
 
+
 class VirtualShaker(ShakerPlatformInterface):
 
-    """A virtual driver object."""
+    """A virtual shaker object."""
 
     __slots__ = ["state", "log", "__dict__", "number"]
 
     def __init__(self, number) -> None:
-        """Initialize virtual driver to disabled."""
+        """Initialize virtual shaker."""
         self.number = number
         self.log = logging.getLogger("VirtualShaker.{}".format(number))
 
@@ -660,9 +662,9 @@ class VirtualShaker(ShakerPlatformInterface):
         return "VirtualShaker.{}".format(self.number)
 
     def pulse(self, duration_secs=None, power=None):
-        """Pulse virtual coil."""
+        """Pulse virtual shaker."""
         self.log.debug("Pulsing shaker for %ss at power: %s", duration_secs, power)
 
     def stop(self):
-        """Pulse virtual coil."""
+        """Pulse virtual shaker."""
         self.log.debug("Stopping shaker")
