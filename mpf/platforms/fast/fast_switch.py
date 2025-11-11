@@ -34,8 +34,14 @@ class FASTSwitch:
         self.hw_number = Util.int_to_hex_string(hw_number)  # hex version the FAST hw actually uses
         self.platform = communicator.platform  # Needed by the SwitchController
 
-        self.baseline_switch_config = FastSwitchConfig(number=self.hw_number, mode='00', debounce_close='00',
-                                                       debounce_open='00')
+        # Mode 01 is normal: report active when closed, report inactive when open
+        # Mode 00 mutes switches: do not report this switch from hardware ever
+        # The default mode will be overridden by config file switches, so this value only applies
+        # to switch numbers not defined in config files. Mute for production mode, or if specified.
+        default_mode = '00' if self.platform.config['net']['mute_unconfigured_switches'] or \
+            self.platform.machine.options["production"] else '01'
+        self.baseline_switch_config = FastSwitchConfig(number=self.hw_number, mode=default_mode,
+                                                        debounce_close='00', debounce_open='00')
         self.current_hw_config = self.baseline_switch_config
 
     def set_initial_config(self, mpf_config, platform_settings):
