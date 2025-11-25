@@ -1,6 +1,14 @@
 name: Lint all Python files
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - dev
+      - 0.80.x
+  pull_request:
+      - dev
+      - 0.80.x
+
 
 jobs:
   prospector:

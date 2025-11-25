@@ -1,6 +1,13 @@
 name: Test on all platforms
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - dev
+      - 0.80.x
+  pull_request:
+      - dev
+      - 0.80.x
 
 jobs:
   tests:
