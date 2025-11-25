@@ -22,7 +22,7 @@ class FastShaker(ShakerPlatformInterface):
 
         #self.exp_connection.register_processor('MS:', self.base_address, self.shaker_index, self._process_ms)
 
-    def pulse(self, duration_secs, power):
+    def pulse(self, duration_secs=None, power=None):
         """Pulse the shaker at the specified power for the specified duration."""
         if not power or not duration_secs:
             self.log.debug("Shaker pulse called with no power or duration, will not shake.")

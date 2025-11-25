@@ -15,7 +15,7 @@ if MYPY:    # pragma: no cover
 
 class Shaker(SystemWideDevice):
 
-    """A digital output on either a light or driver platform."""
+    """Represents a shaker device in a pinball machine."""
 
     config_section = 'shakers'
     collection = 'shakers'
@@ -24,7 +24,7 @@ class Shaker(SystemWideDevice):
     __slots__ = ["hw_shaker", "type", "__dict__"]
 
     def __init__(self, machine: MachineController, name: str) -> None:
-        """Initialize digital output."""
+        """Initialize shaker."""
         self.hw_shaker = None           # type: Optional[ShakerPlatformInterface]
         self.platform = None            # type: Optional[ShakerPlatform]
         super().__init__(machine, name)
