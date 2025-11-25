@@ -61,6 +61,7 @@ if MYPY:   # pragma: no cover
     from mpf.devices.digital_output import DigitalOutput    # pylint: disable-msg=cyclic-import,unused-import
     from logging import Logger  # noqa
     from mpf.devices.autofire import AutofireCoil   # pylint: disable-msg=cyclic-import,unused-import
+    from mpf.devices.shaker import Shaker   # pylint: disable-msg=cyclic-import,unused-import
     from mpf.devices.stepper import Stepper     # pylint: disable-msg=cyclic-import,unused-import
     from mpf.config_players.show_player import ShowPlayer   # pylint: disable-msg=cyclic-import,unused-import
     from mpf.devices.dmd import Dmd     # pylint: disable-msg=cyclic-import,unused-import
@@ -167,6 +168,7 @@ class MachineController(LogMixin):
             self.autofire_coils = {}                    # type: Dict[str, AutofireCoil]
             self.motors = {}                            # type: Dict[str, Motor]
             self.digital_outputs = {}                   # type: Dict[str, DigitalOutput]
+            self.shakers = {}                           # type: Dict[str, Shaker]
             self.shows = {}                             # type: Dict[str, Show]
             self.shots = {}                             # type: Dict[str, Shot]
             self.shot_groups = {}                       # type: Dict[str, ShotGroup]

@@ -812,6 +812,7 @@ hardware:
     accelerometers: list|str|default
     i2c: list|str|default
     stepper_controllers: list|str|default
+    shaker_controllers: list|str|default
     hardware_sound_system: list|str|default
 hardware_sound_systems:
     __valid_in__: machine
@@ -1967,6 +1968,18 @@ steppers:
 stepper_position_settings:
     event: single|str|
     speed: single|int|None
+shakers:
+    __valid_in__: machine
+    __type__: device
+    default_power: single|float|0.0
+    number: single|str|
+    control_events: dict|str:subconfig(shaker_pulse_settings)|None
+    platform: single|str|None
+    platform_settings: single|dict|None
+shaker_pulse_settings:
+    action: single|enum(pulse,stop)|pulse
+    power: single|float|None
+    duration: single|template_secs|None
 spike_stepper_settings:
     homing_speed: single|int|10
     speed: single|int|20
