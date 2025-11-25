@@ -16,7 +16,7 @@ class ShakerPlatformInterface(metaclass=abc.ABCMeta):
     __slots__ = []  # type: List[str]
 
     @abc.abstractmethod
-    def pulse(self, duration_secs=None, power=None):
+    def pulse(self, duration_secs, power):
         """Enable the shaker for specified duration and power level."""
         raise NotImplementedError
 

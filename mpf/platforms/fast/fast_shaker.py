@@ -1,9 +1,6 @@
 """Fast shaker implementation."""
 
-import asyncio
-
 from mpf.core.utility_functions import Util
-from mpf.exceptions.config_file_error import ConfigFileError
 from mpf.platforms.interfaces.shaker_platform_interface import ShakerPlatformInterface
 
 
