@@ -41,7 +41,7 @@ class FASTSwitch:
         default_mode = '00' if self.platform.config['net']['mute_unconfigured_switches'] or \
             self.platform.machine.options["production"] else '01'
         self.baseline_switch_config = FastSwitchConfig(number=self.hw_number, mode=default_mode,
-                                                        debounce_close='00', debounce_open='00')
+                                                       debounce_close='00', debounce_open='00')
         self.current_hw_config = self.baseline_switch_config
 
     def set_initial_config(self, mpf_config, platform_settings):
