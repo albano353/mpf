@@ -1,18 +1,17 @@
 """A digital output on either a light or driver platform."""
-from typing import Union, Optional
+from typing import Optional
 
 from mpf.core.delays import DelayManager
 from mpf.core.events import event_handler
 
 from mpf.core.machine import MachineController
-from mpf.core.platform import DriverConfig, LightConfig, LightConfigColors
 from mpf.core.system_wide_device import SystemWideDevice
-from mpf.platforms.interfaces.driver_platform_interface import PulseSettings, HoldSettings
 
 MYPY = False
 if MYPY:    # pragma: no cover
     from mpf.core.platform import ShakerPlatform    # pylint: disable-msg=cyclic-import,unused-import
-    from mpf.platforms.interfaces.shaker_platform_interface import ShakerPlatformInterface  # pylint: disable-msg=cyclic-import,unused-import
+    from mpf.platforms.interfaces.shaker_platform_interface import ShakerPlatformInterface  # pylint: disable-msg=cyclic-import,unused-import; #noqa
+
 
 class Shaker(SystemWideDevice):
 
@@ -47,10 +46,12 @@ class Shaker(SystemWideDevice):
 
     @event_handler(1)
     def event_pulse(self, duration=None, power=None, **kwargs):
+        """Event handler for triggering a pulse."""
         del kwargs
         self.pulse(duration, power)
 
     def pulse(self, duration=None, power=None):
+        """Pulse the shaker for the given duration and power level."""
         if power is None:
             power = self.config['default_power']
         if not duration:
@@ -59,8 +60,10 @@ class Shaker(SystemWideDevice):
 
     @event_handler(2)
     def event_stop(self, **kwargs):
+        """Event handler for stopping the shaker."""
         del kwargs
         self.stop()
 
     def stop(self):
+        """Stop the shaker."""
         self.hw_shaker.stop()
