@@ -22,7 +22,7 @@ class ModeDevice(Device, metaclass=abc.ABCMeta):
         self.mode = None    # type: Optional[Mode]
 
     async def device_added_to_mode(self, mode: Mode) -> None:
-        """Add device to a running mode.
+        """Add device to a loading mode.
 
         Args:
         ----
