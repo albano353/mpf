@@ -299,7 +299,7 @@ class FASTDriver:
             elif param == 'pwm2_ms_x100':
                 new_settings['pwm2_ms'] = Util.int_to_hex_string(int(new_settings[param], 16) // 100)
 
-            param_name = f'param{idx+1}'
+            param_name = f'param{idx + 1}'
             if new_settings[param] != getattr(self.current_driver_config, param_name):
                 setattr(self.current_driver_config, param_name, new_settings[param])
                 reconfigured = True
