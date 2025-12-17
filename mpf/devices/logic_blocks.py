@@ -394,7 +394,7 @@ class Counter(LogicBlock):
         for entry in self.config['control_events']:
             if entry['action'] in ('add', 'subtract', 'jump'):
                 handler = getattr(self, "event_{}".format(entry['action']))
-                kwargs = {'value': entry['value']}
+                kwargs = {'value': entry['value'], 'priority': entry['priority']}
                 results.append((entry['event'], handler, kwargs))
             else:
                 raise AssertionError("Invalid control_event action {} in counter".format(entry['action']), self.name)
