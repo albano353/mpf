@@ -368,7 +368,7 @@ class Counter(LogicBlock):
             self._setup_machine_control_events()
 
     def add_control_events_in_mode(self, mode: Mode) -> None:
-        """Activate control events given a mode context"""
+        """Activate control events given a mode context."""
         self._setup_mode_control_events(mode)
 
     def _setup_machine_control_events(self):

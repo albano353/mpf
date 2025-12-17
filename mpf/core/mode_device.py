@@ -42,6 +42,7 @@ class ModeDevice(Device, metaclass=abc.ABCMeta):
             player: Current active player
         """
         del player
+        del mode
 
     @property
     def can_exist_outside_of_game(self) -> bool:
@@ -87,4 +88,3 @@ class ModeDevice(Device, metaclass=abc.ABCMeta):
             mode: Mode which stopped
         """
         del mode
-        self.mode = None
