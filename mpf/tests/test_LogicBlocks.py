@@ -897,3 +897,36 @@ class TestLogicBlocks(MpfFakeGameTestCase):
         self.post_event("accrual7_step2")
         self.assertEqual(3, self._events["accrual7_complete"])
         self.assertEqual(11, self._events["accrual7_hit"])
+
+    #test for when a counter action jump is called when it shouldn't be loaded
+    def test_counter_jump_when_mode_not_loaded(self):
+        self.start_game()
+        self.mock_event("counter6_complete")
+        self.post_event("set_counter6_25")
+        self.assertEventNotCalled("counter6_complete")
+        self.post_event("start_mode4")
+        self.post_event("set_counter6_25")
+        self.assertEventCalled("counter6_complete")
+
+    #test for when a counter action add is called when it shouldn't be loaded
+    def test_counter_add_when_mode_not_loaded(self):
+        self.start_game()
+        self.mock_event("counter6_complete")
+        self.post_event("increase_counter6_5")
+        self.post_event("increase_counter6_5")
+        self.assertEventNotCalled("counter6_complete")
+        self.post_event("start_mode4")
+        self.post_event("increase_counter6_5")
+        self.post_event("increase_counter6_5")
+        self.assertEventCalled("counter6_complete")
+
+    #test for when a counter action subtract is called when it shouldn't be loaded
+    def test_counter_subtract_when_mode_not_loaded(self):
+        self.start_game()
+        self.mock_event("logicblock_counter6_updated")
+        self.post_event("reduce_counter6_5")
+        self.assertEventNotCalled("logicblock_counter6_updated")
+        self.post_event("start_mode4")
+        self.post_event("reduce_counter6_5")
+        self.assertEventCalled("logicblock_counter6_updated")
+        
