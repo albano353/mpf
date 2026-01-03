@@ -22,13 +22,13 @@ class ModeDevice(Device, metaclass=abc.ABCMeta):
         self.mode = None    # type: Optional[Mode]
 
     async def device_added_to_mode(self, mode: Mode) -> None:
-        """Add device to a running mode.
+        """Add device to a loading mode.
 
         Args:
         ----
             mode: Mode which loaded the device
         """
-        del mode
+        self.mode = mode
         await self._initialize()
 
     def device_loaded_in_mode(self, mode: Mode, player: Player) -> None:
@@ -42,7 +42,7 @@ class ModeDevice(Device, metaclass=abc.ABCMeta):
             player: Current active player
         """
         del player
-        self.mode = mode
+        del mode
 
     @property
     def can_exist_outside_of_game(self) -> bool:
@@ -88,4 +88,3 @@ class ModeDevice(Device, metaclass=abc.ABCMeta):
             mode: Mode which stopped
         """
         del mode
-        self.mode = None
