@@ -1024,6 +1024,7 @@ counter_control_events:  # subconfig for mode counters
     action: single|enum(add,subtract,jump)|
     event: single|event_handler|
     value: single|template_int|None
+    priority: single|int|0
 sequences:
     __valid_in__: machine, mode
     __type__: device

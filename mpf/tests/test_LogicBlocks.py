@@ -380,6 +380,16 @@ class TestLogicBlocks(MpfFakeGameTestCase):
             self.mock_event("logicblock_counter7_updated")
         self.start_game()
         reset_event_mocks()
+
+        # Posting control events while mode is not started should not cause changes
+        self.assertPlaceholderEvaluates(None, "device.counters.counter6.value")
+        self.post_event("increase_counter6_3")
+        self.assertPlaceholderEvaluates(None, "device.counters.counter6.value")
+        self.post_event("counter6_count")
+        self.assertPlaceholderEvaluates(None, "device.counters.counter6.value")
+        self.post_event("set_counter6_25")
+        self.assertPlaceholderEvaluates(None, "device.counters.counter6.value")
+
         # Start mode with control events and counter6
         self.post_event("start_mode4")
         self.assertTrue("mode4" in self.machine.modes)
