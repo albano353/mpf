@@ -1,5 +1,4 @@
 """Generic list randomizer."""
-from uuid import uuid4
 import random
 
 
@@ -13,13 +12,13 @@ class Randomizer:
         self.force_different = True
         self.force_all = False
         self.disable_random = False
-        # self.loop - property which sets force_all=True if loop==False
         self.items = list()
 
+        # self.loop - property which sets force_all=True if loop==False
         self._loop = True
+
         self._template_type = template_type
         self.data = None
-        self._uuid = uuid4()
 
         if isinstance(items, (list, tuple)):
             for i in items:

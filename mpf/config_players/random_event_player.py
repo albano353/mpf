@@ -23,48 +23,44 @@ class RandomEventPlayer(ConfigPlayer):
         """Return true if scope is not player."""
         return settings['scope'] != "player"
 
+    def _build_randomizer(self, settings):
+        randomizer = Randomizer(settings['events'], self.machine, template_type="event")
+
+        if settings['force_all']:
+            randomizer.force_all = True
+
+        if not settings['force_different']:
+            randomizer.force_different = False
+
+        if settings['disable_random']:
+            randomizer.disable_random = True
+
+        randomizer.fallback_value = settings.get('fallback_event')
+        return randomizer
+
     def _get_randomizer(self, settings, context, calling_context):
         key = "random_{}.{}".format(context, calling_context)
         if settings['scope'] == "player":
             if not self.machine.game.player[key]:
-                self.machine.game.player[key] = Randomizer(
-                    settings['events'], self.machine, template_type="event")
-                r'''player_var: random_(x).(y)
+                self.machine.game.player[key] = self._build_randomizer(settings)
 
-                desc: Holds references to Randomizer settings that need to be
-                tracked on a player basis. There is nothing you need to know
-                or do with this, rather this is just FYI on what the player
-                variables that start with "random\_" are.
-                '''
+            '''player_var: random_(x).(y)
 
-                if settings['force_all']:
-                    self.machine.game.player[key].force_all = True
-
-                if not settings['force_different']:
-                    self.machine.game.player[key].force_different = False
-
-                if settings['disable_random']:
-                    self.machine.game.player[key].disable_random = True
-
-                self.machine.game.player[key].fallback_value = settings.get('fallback_event')
-
+            desc: Holds references to Randomizer settings that need to be
+            tracked on a player basis. There is nothing you need to know
+            or do with this, rather this is just FYI on what the player
+            variables that start with "random_" are.
+            '''
             return self.machine.game.player[key]
 
         if key not in self._machine_wide_dict:
-            self._machine_wide_dict[key] = Randomizer(
-                settings['events'], self.machine, template_type="event")
+            self._machine_wide_dict[key] = self._build_randomizer(settings)
 
-            if settings['force_all']:
-                self._machine_wide_dict[key].force_all = True
+        '''machine_var: random_(x).(y)
 
-            if not settings['force_different']:
-                self._machine_wide_dict[key].force_different = False
-
-            if settings['disable_random']:
-                self._machine_wide_dict[key].disable_random = True
-
-            self._machine_wide_dict[key].fallback_value = settings.get('fallback_event')
-
+        desc: Holds references to Randomizer settings that need to be
+        tracked on a machine basis.
+        '''
         return self._machine_wide_dict[key]
 
     def play(self, settings, context, calling_context, priority=0, **kwargs):
