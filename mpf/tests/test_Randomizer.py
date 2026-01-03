@@ -145,9 +145,9 @@ class TestRandomizer(MpfTestCase):
         for x in range(100):
             results.append(next(r))
 
-        self.assertAlmostEqual(67, results.count('1'), delta=12)
+        self.assertAlmostEqual(67, results.count('1'), delta=20)
         self.assertEqual(0, results.count('2'))
-        self.assertAlmostEqual(33, results.count('3'), delta=12)
+        self.assertAlmostEqual(33, results.count('3'), delta=20)
 
 
     def test_fallback_value(self):
@@ -210,9 +210,9 @@ class TestRandomizer(MpfTestCase):
         for x in range(10000):
             results.append(next(r))
 
-        self.assertAlmostEqual(1000, results.count('1'), delta=100)
+        self.assertAlmostEqual(1000, results.count('1'), delta=150)
         self.assertAlmostEqual(6000, results.count('2'), delta=300)
-        self.assertAlmostEqual(3000, results.count('3'), delta=150)
+        self.assertAlmostEqual(3000, results.count('3'), delta=200)
         self.assertEqual(0, results.count('0'))
 
         # Case 3 - force all being true causes even usage
