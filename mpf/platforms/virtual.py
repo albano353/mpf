@@ -529,7 +529,9 @@ class VirtualLight(LightPlatformInterface):
 
     def __lt__(self, other):
         """Order lights by string."""
-        return self.number < other.number
+        self_address, self_offset = VirtualLight.split_light_address(self.number)
+        other_address, other_offset = VirtualLight.split_light_address(other.number)
+        return (self_address, int(self_offset)) < (other_address, int(other_offset))
 
 
 class VirtualServo(ServoPlatformInterface):
