@@ -427,7 +427,7 @@ class Counter(LogicBlock):
             value: Value to add to the counter.
             kwargs: Additional arguments.
         """
-        if not self.enabled:
+        if (not self.enabled):
             return
         evaluated_value = value.evaluate_or_none(kwargs)
         if evaluated_value is None:
@@ -448,7 +448,7 @@ class Counter(LogicBlock):
             value: Value to subtract from the counter.
             kwargs: Additional arguments.
         """
-        if not self.enabled:
+        if (not self.enabled):
             return
         evaluated_value = value.evaluate_or_none(kwargs)
         if evaluated_value is None:
@@ -469,7 +469,7 @@ class Counter(LogicBlock):
             value: Value to add to jump to.
             kwargs: Additional arguments.
         """
-        if not self.enabled:
+        if (not self.enabled):
             return
         evaluated_value = value.evaluate_or_none(kwargs)
         if evaluated_value is None:
