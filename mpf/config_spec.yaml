@@ -566,6 +566,7 @@ fast_net:
     default_quick_debounce_close: single|ms|2
     default_normal_debounce_open: single|ms|4
     default_normal_debounce_close: single|ms|4
+    mute_unconfigured_switches: single|bool|false
     gi_hz: single|int|30
     lamp_hz: single|int|30
 fast_io_loop:
@@ -913,6 +914,7 @@ counter_control_events:  # subconfig for mode counters
     action: single|enum(add,subtract,jump)|
     event: single|event_handler|
     value: single|template_int|None
+    priority: single|int|0
 sequences:
     __valid_in__: machine, mode
     __type__: device

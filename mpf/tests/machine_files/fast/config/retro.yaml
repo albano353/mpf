@@ -13,6 +13,7 @@ fast:
         port: com3
         debug: true
         controller: wpc95
+        mute_unconfigured_switches: true  # Until tests are updated
 
 switches:
     s_baseline:  # Starts active via SA:

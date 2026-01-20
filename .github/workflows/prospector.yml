@@ -1,6 +1,15 @@
 name: Lint all Python files
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - dev
+      - 0.80.x
+  pull_request:
+    branches:
+      - dev
+      - 0.80.x
+
 
 jobs:
   prospector:
@@ -14,11 +23,11 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          # Ubuntu can't run 3.12 because Pillow dependencies.
-          python-version: 3.11
+          python-version: 3.12
 
       - name: Install MPF
         run: |
+          sudo apt-get install -y libjpeg-dev
           pip install --upgrade pip setuptools wheel build prospector
           pip install -e .
 
