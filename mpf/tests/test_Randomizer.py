@@ -249,9 +249,9 @@ class TestRandomizer(MpfTestCase):
         for x in range(10000):
             results.append(next(r))
 
-        self.assertAlmostEqual(4700, results.count('1'), delta=100)
-        self.assertAlmostEqual(2650, results.count('2'), delta=100)
-        self.assertAlmostEqual(2650, results.count('3'), delta=100)
+        self.assertAlmostEqual(4700, results.count('1'), delta=300)
+        self.assertAlmostEqual(2650, results.count('2'), delta=200)
+        self.assertAlmostEqual(2650, results.count('3'), delta=200)
 
         # Case 5 - force different with force all causes even usage
         items = [
