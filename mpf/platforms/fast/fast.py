@@ -350,7 +350,7 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
         driver = int(driver_str)
 
         if board.driver_count <= driver:
-            raise AssertionError(f"I/O Board {board} only has drivers 0-{board.driver_count-1}. "
+            raise AssertionError(f"I/O Board {board} only has drivers 0-{board.driver_count - 1}. "
                                  f"Driver value {driver} is not valid.")
 
         index = board.start_driver + driver
@@ -494,7 +494,7 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
         switch = int(switch_str)
 
         if board.switch_count <= switch:
-            raise AssertionError(f"Board {board} only has switches 0-{board.switch_count-1}. "
+            raise AssertionError(f"Board {board} only has switches 0-{board.switch_count - 1}. "
                                  f"Switch value {switch} is not valid.")
 
         return Util.int_to_hex_string(board.start_switch + switch)

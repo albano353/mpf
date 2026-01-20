@@ -1,6 +1,14 @@
 name: Test on all platforms
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - dev
+      - 0.80.x
+  pull_request:
+    branches:
+      - dev
+      - 0.80.x
 
 jobs:
   tests:
@@ -45,6 +53,10 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install -y libjpeg-dev
 
       - name: Install MPF
         run: |

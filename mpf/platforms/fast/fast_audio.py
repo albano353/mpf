@@ -98,7 +98,7 @@ class FASTAudioInterface(LogMixin):
 
     def _configure_control_pins(self):
         for i in range(6):
-            self.control_pin_pulse_times.append(self.communicator.config[f'pin{i+1}_pulse_time'])
+            self.control_pin_pulse_times.append(self.communicator.config[f'pin{i + 1}_pulse_time'])
 
         self.control_pin_pulse_times.append(self.communicator.config['power_pulse_time'])
         self.control_pin_pulse_times.append(self.communicator.config['reset_pulse_time'])
