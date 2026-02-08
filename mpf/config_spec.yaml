@@ -1886,11 +1886,6 @@ widget_player:
     tokens: dict|str:str|None
     x: single|int|0
     y: single|int|0
-video_control_events:
-    action: single|enum(play,pause,stop,seek,volume,position)|
-    event: single|event_handler|
-    value: single|float|None
-
 window:
     __valid_in__: machine
     __type__: config
