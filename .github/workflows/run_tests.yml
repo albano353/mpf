@@ -71,6 +71,7 @@ jobs:
           else #must be mac!
             brew install libjpeg-turbo
           fi
+
       - name: Install MPF
         run: |
           pip install --upgrade pip setuptools wheel build coveralls
