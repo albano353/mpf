@@ -14,10 +14,11 @@ from mpf.platforms.interfaces.light_platform_interface import LightPlatformInter
 from mpf.platforms.interfaces.servo_platform_interface import ServoPlatformInterface
 from mpf.platforms.interfaces.switch_platform_interface import SwitchPlatformInterface
 from mpf.platforms.interfaces.stepper_platform_interface import StepperPlatformInterface
+from mpf.platforms.interfaces.shaker_platform_interface import ShakerPlatformInterface
 
 from mpf.core.platform import ServoPlatform, SwitchPlatform, DriverPlatform, AccelerometerPlatform, I2cPlatform, \
     DmdPlatform, RgbDmdPlatform, LightsPlatform, DriverConfig, SwitchConfig, SegmentDisplayPlatform, StepperPlatform, \
-    HardwareSoundPlatform, SwitchSettings, DriverSettings, RepulseSettings
+    HardwareSoundPlatform, SwitchSettings, DriverSettings, RepulseSettings, ShakerPlatform
 from mpf.core.utility_functions import Util
 from mpf.platforms.interfaces.driver_platform_interface import DriverPlatformInterface, PulseSettings, HoldSettings
 
@@ -25,7 +26,7 @@ from mpf.platforms.interfaces.driver_platform_interface import DriverPlatformInt
 # pylint: disable=too-many-ancestors,too-many-public-methods
 class VirtualHardwarePlatform(AccelerometerPlatform, I2cPlatform, ServoPlatform, LightsPlatform, SwitchPlatform,
                               DriverPlatform, DmdPlatform, RgbDmdPlatform, SegmentDisplayPlatform, StepperPlatform,
-                              HardwareSoundPlatform):
+                              HardwareSoundPlatform, ShakerPlatform):
 
     """Base class for the virtual hardware platform."""
 
@@ -119,7 +120,7 @@ class VirtualHardwarePlatform(AccelerometerPlatform, I2cPlatform, ServoPlatform,
                         if " " in switch_name:
                             self.raise_config_error("MPF no longer supports lists separated by space in "
                                                     "virtual_platform_start_active_switches. Please separate "
-                                                    "switches by comma: {}.".format(switch_name), 1)
+                                                    "switches by comma: {}.".format(switch_name), 2)
                         else:
                             self.raise_config_error("Switch {} used in virtual_platform_start_active_switches was not "
                                                     "found in switches section.".format(switch_name), 1)
@@ -138,6 +139,11 @@ class VirtualHardwarePlatform(AccelerometerPlatform, I2cPlatform, ServoPlatform,
                 self.hw_switches[switch.hw_switch.number] = switch.state ^ switch.invert
 
         return self.hw_switches
+
+    async def configure_shaker(self, number: str, config: Dict):
+        """Configure a shaker in platform."""
+        del config
+        return VirtualShaker(number)
 
     def _get_platforms(self):
         platforms = []
@@ -497,18 +503,35 @@ class VirtualLight(LightPlatformInterface):
 
     def is_successor_of(self, other):
         """Return true if the other light has the same number string plus the suffix '+1'."""
-        return self.number == other.number + "+1"
+        self_addr, self_offset = VirtualLight.split_light_address(self.number)
+        other_addr, other_offset = VirtualLight.split_light_address(other.number)
+        return self_addr == other_addr and int(self_offset) == int(other_offset) + 1
 
     def get_successor_number(self):
         """Return the number with the suffix '+1'.
 
         As there is not real number format for virtual is this is all we can do here.
         """
-        return self.number + "+1"
+        addr, offset = VirtualLight.split_light_address(self.number)
+        return f"{addr}+{int(offset) + 1}"
+
+    @staticmethod
+    def split_light_address(address):
+        """Return a light address (without 'led-' prefix) and an offset number as a list.
+
+        Used when calculating relative light addresses,
+        e.g. led-2-0-1 -> led-2-0-1+1 -> led-2-0-1+2
+        """
+        address = address.replace("led-", "")
+        if "+" in address:
+            return address.rsplit("+", 1)
+        return (address, '0')
 
     def __lt__(self, other):
         """Order lights by string."""
-        return self.number < other.number
+        self_address, self_offset = VirtualLight.split_light_address(self.number)
+        other_address, other_offset = VirtualLight.split_light_address(other.number)
+        return (self_address, int(self_offset)) < (other_address, int(other_offset))
 
 
 class VirtualServo(ServoPlatformInterface):
@@ -623,3 +646,27 @@ class VirtualDriver(DriverPlatformInterface):
         self.log.debug("Timed enabling driver: pulse for %sms, hold for %sms",
                        pulse_settings.duration, hold_settings.duration)
         self.state = "timed_enabled_" + str(pulse_settings.duration) + "_" + str(hold_settings.duration)
+
+
+class VirtualShaker(ShakerPlatformInterface):
+
+    """A virtual shaker object."""
+
+    __slots__ = ["state", "log", "__dict__", "number"]
+
+    def __init__(self, number) -> None:
+        """Initialize virtual shaker."""
+        self.number = number
+        self.log = logging.getLogger("VirtualShaker.{}".format(number))
+
+    def __repr__(self):
+        """Str representation."""
+        return "VirtualShaker.{}".format(self.number)
+
+    def pulse(self, duration_secs=None, power=None):
+        """Pulse virtual shaker."""
+        self.log.debug("Pulsing shaker for %ss at power: %s", duration_secs, power)
+
+    def stop(self):
+        """Pulse virtual shaker."""
+        self.log.debug("Stopping shaker")

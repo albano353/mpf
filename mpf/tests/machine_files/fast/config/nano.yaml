@@ -12,6 +12,7 @@ fast:
     net:
         port: com6
         controller: nano
+        mute_unconfigured_switches: true  # Until tests are updated
         io_loop:
             3208:
                 model: FP-I/O-3208

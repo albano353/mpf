@@ -19,6 +19,7 @@ fast:
     net:
         port: com3
         controller: neuron
+        mute_unconfigured_switches: true  # Until tests are updated
         io_loop:
             io3208:  # drivers 0-8 (0x00-0x08), switches 0-31 (0x00-0x1F)
                 model: FP-I/O-3208

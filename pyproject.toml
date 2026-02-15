@@ -2,7 +2,7 @@
 name = "mpf"
 description = "The Mission Pinball Framework (MPF)"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.8,<3.15"
 license = {text = "MIT"}
 authors = [{ name = "The Mission Pinball Framework Team", email = "brian@missionpinball.org"}]
 keywords = ["pinball"]
@@ -14,6 +14,9 @@ classifiers=[
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Natural Language :: English",
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: Microsoft :: Windows",
@@ -32,7 +35,7 @@ dependencies = [
     "setuptools ~= 72.2.0",  # Nov 16, 2024,
     "sortedcontainers == 2.4.0",  # Oct 4 2023, used by platform batch light system
     "terminaltables == 3.1.10",  # Oct 4 2023, used for the service CLI
-    "Pillow == 9.5.0"  # Nov 4 2023. Asciimatics needs Pillow > 2.7, but latest 10.x breaks kivy for now (fix due in 2.3), so we pin to latest working Pillow for now.
+    "Pillow >= 10.4.0"  # Dec 7, 2025. Upgrading past broken versions
     ]
 dynamic = ["version"]
 
@@ -42,6 +45,7 @@ irc = ['irc==19.0.1']
 linux_i2c = ['smbus2_asyncio==0.0.5']
 osc = ['python-osc==1.8.3']
 pin2dmd = ['pyusb==1.1.0']
+zedmd = ['numpy>=1.7.0']
 rpi = ['apigpio-mpf==0.0.4']
 # uvloop must be optional, because non-Cython derivatives don't support it.
 uvloop = ['uvloop==0.19.0']  # Oct 4 2023, msin asyncio loop
@@ -58,7 +62,7 @@ all = [  # currently no way to just use the names from above afaik?
 
 [project.urls]
 homepage = "https://missionpinball.org"
-support-forum = "https://missionpinball.org/community/"
+support-forum = "https://missionpinball.org/latest/community/"
 
 [project.scripts]
 mpf = "mpf.commands:run_from_command_line"

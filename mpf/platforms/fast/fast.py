@@ -8,7 +8,7 @@ from serial import SerialException
 from mpf.core.platform import (RgbDmdPlatform, DriverConfig, DriverSettings,
                                LightsPlatform, RepulseSettings,
                                SegmentDisplayPlatform, ServoPlatform,
-                               StepperPlatform,
+                               StepperPlatform, ShakerPlatform,
                                SwitchConfig, SwitchSettings)
 from mpf.core.utility_functions import Util
 from mpf.exceptions.config_file_error import ConfigFileError
@@ -25,6 +25,7 @@ from mpf.platforms.fast.fast_light import FASTMatrixLight
 from mpf.platforms.fast.fast_port_detector import FastPortDetector
 from mpf.platforms.fast.fast_segment_display import FASTSegmentDisplay
 from mpf.platforms.fast.fast_servo import FastServo
+from mpf.platforms.fast.fast_shaker import FastShaker
 from mpf.platforms.fast.fast_stepper import FastStepper
 from mpf.platforms.fast.fast_switch import FASTSwitch
 # pylint: disable-msg=too-many-instance-attributes
@@ -34,7 +35,7 @@ from mpf.platforms.system11 import System11OverlayPlatform
 
 class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
                            SegmentDisplayPlatform, StepperPlatform,
-                           System11OverlayPlatform):
+                           ShakerPlatform, System11OverlayPlatform):
 
     """Platform class for the FAST Pinball hardware."""
 
@@ -45,7 +46,7 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
                  "io_boards", "io_boards_by_name", "switches_initialized",
                  "drivers_initialized", "audio_interface"]
 
-    port_types = ['net', 'exp', 'aud', 'dmd', 'rgb', 'seg', 'emu']
+    port_types = ['net', 'exp', 'exp_int', 'aud', 'dmd', 'rgb', 'seg', 'emu']
 
     def __init__(self, machine):
         """Initialize FAST hardware platform.
@@ -79,7 +80,7 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
         elif self.machine_type == 'no_net':
             pass
         else:
-            self.raise_config_error(f'Unknown machine_type "{self.machine_type}" configured fast.', 6)
+            self.raise_config_error(f'Unknown machine_type "{self.machine_type}" could not be configured by FAST.', 6)
 
         # Even though System11 uses ticks, that's handled on the Overlay and not needed here.
         self.features['tickless'] = True
@@ -247,6 +248,11 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
                     FastExpCommunicator
                 communicator = FastExpCommunicator(platform=self, processor=port, config=config)
                 self.serial_connections['exp'] = communicator
+            elif port == 'exp_int':
+                from mpf.platforms.fast.communicators.exp import \
+                    FastExpCommunicator
+                communicator = FastExpCommunicator(platform=self, processor=port, config=config)
+                self.serial_connections['exp_int'] = communicator
             elif port == 'seg':
                 from mpf.platforms.fast.communicators.seg import \
                     FastSegCommunicator
@@ -344,7 +350,7 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
         driver = int(driver_str)
 
         if board.driver_count <= driver:
-            raise AssertionError(f"I/O Board {board} only has drivers 0-{board.driver_count-1}. "
+            raise AssertionError(f"I/O Board {board} only has drivers 0-{board.driver_count - 1}. "
                                  f"Driver value {driver} is not valid.")
 
         index = board.start_driver + driver
@@ -488,10 +494,39 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
         switch = int(switch_str)
 
         if board.switch_count <= switch:
-            raise AssertionError(f"Board {board} only has switches 0-{board.switch_count-1}. "
+            raise AssertionError(f"Board {board} only has switches 0-{board.switch_count - 1}. "
                                  f"Switch value {switch} is not valid.")
 
         return Util.int_to_hex_string(board.start_switch + switch)
+
+    async def configure_shaker(self, number: str, config: Dict):
+        """Configure a shaker.
+
+        Args:
+        ----
+            number: Number of shaker
+            config: Dict of config settings.
+
+        Returns: Stepper object.
+        """
+        # TODO consolidate with similar code in configure_light()
+        number = number.lower()
+        parts = number.split("-")
+
+        exp_board = self.exp_boards_by_name[parts[0]]
+
+        try:
+            _, port = parts
+            breakout_id = '0'
+        except ValueError:
+            _, breakout_id, port = parts
+            breakout_id = breakout_id.strip('b')
+
+        brk_board = exp_board.breakouts[breakout_id]
+
+        # verify this board support servos
+        assert int(port) <= int(brk_board.features['shaker_ports'])  # TODO should this be stored as an int?
+        return FastShaker(brk_board, port, config)
 
     def configure_switch(self, number: str, config: SwitchConfig, platform_config: dict) -> FASTSwitch:
         """Configure the switch object for a FAST Pinball controller.
@@ -663,9 +698,8 @@ class FastHardwarePlatform(ServoPlatform, LightsPlatform, RgbDmdPlatform,
 
         if device_num > devices_per_port:
             if name:
-                # TODO get a final error code
                 self.raise_config_error(f"Device number {device_num} exceeds the number of devices per port "
-                                        f"({devices_per_port}) for LED {name}", 8)
+                                        f"({devices_per_port}) for LED {name}", 9)
             else:
                 raise AssertionError(f"Device number {device_num} exceeds the number of devices per port "
                                      f"({devices_per_port})")
