@@ -1023,6 +1023,7 @@ multiballs:
     shoot_again: single|template_ms|10s
     hurry_up_time: single|template_ms|0
     grace_period: single|template_ms|0
+    restart_grace_period: single|template_ms|0
     ball_locks: list|machine(ball_devices)|None
     enable_events: event_handler|event_handler:ms|None
     disable_events: event_handler|event_handler:ms|None
@@ -1319,6 +1320,8 @@ score_reel_groups:
     __type__: device
     reels: list|machine(score_reels)|
     chimes: list|machine(coils)|None
+    enable_chimes_events: event_handler|event_handler:ms|ball_started
+    disable_chimes_events: event_handler|event_handler:ms|game_ended
     lights_tag: single|str|None
 segment_displays:
     __valid_in__: machine
@@ -1738,6 +1741,7 @@ sequence_shots:
     delay_event_list: event_handler|event_handler:ms|None
     sequence_timeout: single|ms|0
     playfield: single|machine(playfields)|None
+    allow_multiple_active: single|bool|true
 switches:
     __valid_in__: machine
     __type__: device
