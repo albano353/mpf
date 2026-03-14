@@ -10,7 +10,7 @@ PyPI.
 
 """
 
-__version__ = '0.80.0.dev9'
+__version__ = '0.80.0.dev13'
 '''The full version of MPF.'''
 
 __short_version__ = '0.80'
@@ -19,7 +19,7 @@ __short_version__ = '0.80'
 __bcp_version__ = '1.1'
 '''The version of BCP this build of MPF uses.'''
 
-__gmc_version__ = '0.1.5'
+__gmc_version__ = '0.1.6'
 '''The version of GMC this build of MPF requires.'''
 
 __config_version__ = '6'
@@ -40,7 +40,7 @@ extended_version = "Mission Pinball Framework v{}, Config version:{}, Show versi
 '''An extended version string that includes the MPF version, show version,
 and BCP versions used in this build of MPF.'''
 
-log_url = "https://missionpinball.org/logs"
+log_url = "https://missionpinball.org/latest/logs"
 # TODO make dynamic "https://docs.missionpinball.org/en/dev/logs/{}.html"
 
 __api__ = ['version',

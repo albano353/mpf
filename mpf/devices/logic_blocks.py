@@ -365,23 +365,40 @@ class Counter(LogicBlock):
 
         # Add control events if included in the config
         if self.config['control_events']:
-            self._setup_control_events(self.config['control_events'])
+            self._setup_machine_control_events()
 
     def add_control_events_in_mode(self, mode: Mode) -> None:
-        """Do not auto enable this device in modes."""
+        """Activate control events given a mode context."""
+        self._setup_mode_control_events(mode)
 
-    def _setup_control_events(self, event_list):
-        self.debug_log("Setting up control events")
+    def _setup_machine_control_events(self):
+        if self.mode:
+            self.debug_log("Not setting up machine control events for mode counter {}".format(self.name))
+            return
 
-        kwargs = {}
-        for entry in event_list:
+        self.debug_log("Setting up machine control events for counter {}".format(self.name))
+        for (event_name, handler, kwargs) in self._generate_control_event_settings():
+            self.machine.events.add_handler(event_name, handler, **kwargs)
+
+    def _setup_mode_control_events(self, mode: Mode):
+        if not self.mode == mode:
+            self.debug_log("Not setting up mode control events for machine counter {}".format(self.name))
+            return
+
+        self.debug_log("Setting up control events for counter {} in mode {}".format(self.name, mode.name))
+        for (event_name, handler, kwargs) in self._generate_control_event_settings():
+            mode.add_mode_event_handler(event_name, handler, **kwargs)
+
+    def _generate_control_event_settings(self):
+        results = []
+        for entry in self.config['control_events']:
             if entry['action'] in ('add', 'subtract', 'jump'):
                 handler = getattr(self, "event_{}".format(entry['action']))
-                kwargs = {'value': entry['value']}
+                kwargs = {'value': entry['value'], 'priority': entry['priority']}
+                results.append((entry['event'], handler, kwargs))
             else:
-                raise AssertionError("Invalid control_event action {} in mode".
-                                     format(entry['action']), self.name)
-            self.machine.events.add_handler(entry['event'], handler, **kwargs)
+                raise AssertionError("Invalid control_event action {} in counter".format(entry['action']), self.name)
+        return results
 
     def check_complete(self, count_complete_value=None):
         """Check if counter is completed.
@@ -410,6 +427,8 @@ class Counter(LogicBlock):
             value: Value to add to the counter.
             kwargs: Additional arguments.
         """
+        if not self.enabled:
+            return
         evaluated_value = value.evaluate_or_none(kwargs)
         if evaluated_value is None:
             self.log.warning("Placeholder %s for counter add did not evaluate with args %s", value, kwargs)
@@ -429,6 +448,8 @@ class Counter(LogicBlock):
             value: Value to subtract from the counter.
             kwargs: Additional arguments.
         """
+        if not self.enabled:
+            return
         evaluated_value = value.evaluate_or_none(kwargs)
         if evaluated_value is None:
             self.log.warning("Placeholder %s for counter substract did not evaluate with args %s", value, kwargs)
@@ -448,6 +469,8 @@ class Counter(LogicBlock):
             value: Value to add to jump to.
             kwargs: Additional arguments.
         """
+        if not self.enabled:
+            return
         evaluated_value = value.evaluate_or_none(kwargs)
         if evaluated_value is None:
             self.log.warning("Placeholder %s for counter jump did not evaluate with args %s", value, kwargs)

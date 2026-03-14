@@ -65,9 +65,6 @@ achievements:
     sync_ms: single|int|None
     speed: single|float|1
 
-animations:
-    __valid_in__: machine, mode                 # todo add to validator
-    __allow_others__:
 assets:
     __valid_in__: machine, mode
     __type__: config
@@ -75,20 +72,8 @@ assets:
         load: single|str|preload
         file: single|str|None
         priority: single|int|0
-    bitmap_fonts:
-        descriptor: ignore
-    images: # no image-specific config items
-        __allow_others__:
-        persist_frame: single|bool|false
     shows:  # no show-specific config items
         __allow_others__:
-    sounds:
-        __allow_others__:
-    videos:
-        width: single|num|None
-        height: single|num|None
-        events_when_played: list|event_posted|None
-        events_when_stopped: list|event_posted|None
 auditor:
     __valid_in__: machine
     __type__: config
@@ -261,12 +246,6 @@ bcp_server:
     ip: single|str|None
     port: single|int|5050
     type: single|str|
-bitmap_fonts:
-    __valid_in__: machine, mode
-    __type__: config_dict
-    file: single|str|None
-    load: single|str|None
-    descriptor: ignore
 blinkenlight_player:
     __valid_in__: machine, mode, show
     __type__: config_player
@@ -513,69 +492,6 @@ drop_target_banks:
     reset_events: event_handler|event_handler:ms|machine_reset_phase_3, ball_starting
     ignore_switch_ms: single|ms|500ms
     playfield: single|machine(playfields)|playfield
-effects:
-    common:
-        type: single|str|
-    anti_aliasing:
-        none: ignore
-    glow:
-        blur_size: single|float|5
-        intensity: single|float|.5
-        glow_speed: single|float|1.0
-        glow_amplitude: single|float|.1
-    color_channel_mix:
-        order: list|int|1, 2, 0
-    color_dmd:
-        dot_filter: single|bool|true
-        dots_x: single|int|128
-        dots_y: single|int|32
-        blur: single|float|0.1
-        dot_size: single|float|0.7
-        background_color: single|kivycolor|191919ff
-        gain: single|float|1.0
-        shades: single|int|0
-    colorize:
-        tint_color: single|kivycolor|ff66ff00
-    dmd:
-        dot_filter: single|bool|true
-        dots_x: single|int|128
-        dots_y: single|int|32
-        blur: single|float|0.1
-        dot_size: single|float|0.7
-        background_color: single|kivycolor|191919ff
-        gain: single|float|1.0
-        shades: single|int|16
-        luminosity: list|float|.299, .587, .114
-        dot_color: single|kivycolor|ff5500  # classic DMD orange
-    dot_filter:
-        dots_x: single|int|128
-        dots_y: single|int|32
-        blur: single|float|0.1
-        dot_size: single|float|0.7
-        background_color: single|kivycolor|191919ff
-    flip_vertical:
-        none: ignore
-    gain:
-        gain: single|float|1.0
-    gamma:
-        gamma: single|float|1.0
-    horizontal_blur:
-        size: single|float|4.0
-    invert_colors:
-        none: ignore
-    linear_gradient:
-        color_stops: dict|float:kivycolor|None
-        angle: single|float|0.0
-    monochrome:
-        luminosity: list|float|.299, .587, .114
-    pixelate:
-        pixel_size: single|int|10
-    reduce:
-        shades: single|int|16
-    scanlines:
-        none: ignore
-    vertical_blur:
-        size: single|float|4.0
 event_player:
     __valid_in__: machine, mode, show
     __type__: config_player
@@ -650,6 +566,7 @@ fast_net:
     default_quick_debounce_close: single|ms|2
     default_normal_debounce_open: single|ms|4
     default_normal_debounce_close: single|ms|4
+    mute_unconfigured_switches: single|bool|false
     gi_hz: single|int|30
     lamp_hz: single|int|30
 fast_io_loop:
@@ -819,6 +736,7 @@ hardware:
     accelerometers: list|str|default
     i2c: list|str|default
     stepper_controllers: list|str|default
+    shaker_controllers: list|str|default
     hardware_sound_system: list|str|default
 hardware_sound_systems:
     __valid_in__: machine
@@ -855,34 +773,6 @@ high_score:
 info_lights:
     __valid_in__: machine                            # todo add to validator
     __type__: config
-image_pools:
-    __valid_in__: machine, mode                      # todo add to validator
-    __type__: config_dict
-image_templates:
-    __valid_in__: machine
-    __type: config
-images:
-    __valid_in__: machine, mode
-    __type__: config_dict
-    file: single|str|None
-    frame_skips: list|subconfig(images_frame_skips)|None
-    image_template: single|subconfig(images,device)|None
-    load: single|str|None
-images_frame_skips:
-    __valid_in__: machine, mode
-    __type__: config_dict
-    from: single|int|None
-    to: single|int|None
-keyboard:
-    __valid_in__: machine                           # todo add to validator
-    __type__: config_dict
-    switch: single|machine(switches)|None
-    event: single|event_posted|None
-    mc_event: single|event_posted|None
-    toggle: single|bool|false
-    invert: single|bool|false
-    params: dict|str:str|None
-    debug: single|bool|false
 kickbacks:
     __valid_in__: machine
     __type__: device
@@ -899,10 +789,6 @@ kickbacks:
     timeout_max_hits: single|int|0
     timeout_disable_time: single|ms|0
     coil_pulse_delay: single|ms|0
-kivy_config:
-    __valid_in__: machine                           # todo add to validator
-    __type__: config
-    __allow_others__:
 light_settings:
     __valid_in__: machine
     __type__: config
@@ -1029,6 +915,7 @@ counter_control_events:  # subconfig for mode counters
     action: single|enum(add,subtract,jump)|
     event: single|event_handler|
     value: single|template_int|None
+    priority: single|int|0
 sequences:
     __valid_in__: machine, mode
     __type__: device
@@ -1049,9 +936,6 @@ machine_vars:
     initial_value: single|str|
     value_type: single|enum(str,float,int)|int
     persist: single|bool|true
-mc_custom_code:
-    __valid_in__: machine  # used by the MC, ignored by MPF
-    __type__: list
 mma8451_accelerometer:
     i2c_platform: single|str|None
 mode:
@@ -1128,11 +1012,8 @@ mpf:
     plugins: ignore
     platforms: ignore
     paths: ignore
-    report_crashes: single|enum(ask,never,always)|ask
+    report_crashes: single|enum(ask,never,always)|never
     rgbw_white_behavior: single|enum(white_only,min_rgb,duck_rgb)|duck_rgb
-mpf-mc:
-    __valid_in__: machine                           # todo add to validator
-    __type__: config
 multiballs:
     __valid_in__: machine, mode
     __type__: device
@@ -1143,6 +1024,7 @@ multiballs:
     shoot_again: single|template_ms|10s
     hurry_up_time: single|template_ms|0
     grace_period: single|template_ms|0
+    restart_grace_period: single|template_ms|0
     ball_locks: list|machine(ball_devices)|None
     enable_events: event_handler|event_handler:ms|None
     disable_events: event_handler|event_handler:ms|None
@@ -1439,6 +1321,8 @@ score_reel_groups:
     __type__: device
     reels: list|machine(score_reels)|
     chimes: list|machine(coils)|None
+    enable_chimes_events: event_handler|event_handler:ms|ball_started
+    disable_chimes_events: event_handler|event_handler:ms|game_ended
     lights_tag: single|str|None
 segment_displays:
     __valid_in__: machine
@@ -1813,6 +1697,18 @@ steppers:
 stepper_position_settings:
     event: single|str|
     speed: single|int|None
+shakers:
+    __valid_in__: machine
+    __type__: device
+    default_power: single|float|0.0
+    number: single|str|
+    control_events: dict|str:subconfig(shaker_pulse_settings)|None
+    platform: single|str|None
+    platform_settings: single|dict|None
+shaker_pulse_settings:
+    action: single|enum(pulse,stop)|pulse
+    power: single|float|None
+    duration: single|template_secs|None
 spike_stepper_settings:
     homing_speed: single|int|10
     speed: single|int|20
@@ -1846,6 +1742,7 @@ sequence_shots:
     delay_event_list: event_handler|event_handler:ms|None
     sequence_timeout: single|ms|0
     playfield: single|machine(playfields)|None
+    allow_multiple_active: single|bool|true
 switches:
     __valid_in__: machine
     __type__: device
@@ -1931,42 +1828,6 @@ timer_control_events:  # subconfig for mode timers
     action: single|enum(add,subtract,jump,start,stop,reset,restart,pause,set_tick_interval,change_tick_interval,reset_tick_interval)|
     event: single|event_handler|
     value: single|template_float|None  # float for change_tick_interval, int for the rest
-transitions:
-    push:
-        type: single|str|
-        direction: single|str|left
-        easing: single|str|out_quad
-        duration: single|secs|1
-    move_in:
-        type: single|str|
-        direction: single|str|left
-        easing: single|str|out_quad
-        duration: single|secs|1
-    move_out:
-        type: single|str|
-        direction: single|str|left
-        easing: single|str|out_quad
-        duration: single|secs|1
-    fade:
-        type: single|str|
-        duration: single|secs|1
-    swap:
-        type: single|str|
-        duration: single|secs|2
-    card:
-        type: single|str|
-        mode: single|enum(push,pop)|push
-    wipe:
-        type: single|str|
-        duration: single|secs|1
-    fade_back:
-        type: single|str|
-        duration: single|secs|2
-    rise_in:
-        type: single|str|
-        duration: single|secs|2
-    none:
-        type: ignore
 trinamics_steprocker:
     __valid_in__: machine
     __type__: config
@@ -2030,201 +1891,6 @@ widget_player:
     tokens: dict|str:str|None
     x: single|int|0
     y: single|int|0
-widget_styles:
-    __valid_in__: machine, mode
-    __type__: config_dict
-    color: single|kivycolor|ffffffff
-    __allow_others__:
-    # TODO: add all valid attributes
-widgets:
-    __valid_in__: machine, mode
-    __type__: named_lists
-    common:
-        type: single|str|
-        x: single|str|None
-        y: single|str|None
-        anchor_x: single|str|center
-        anchor_y: single|str|center
-        round_anchor_x: single|str|None
-        round_anchor_y: single|str|None
-        opacity: single|float_or_token|1.0
-        z: single|int_or_token|0
-        animations: ignore
-        reset_animations_events: event_handler|event_handler:ms|None
-        color: single|kivycolor|ffffffff
-        style: list|str|None
-        adjust_top: single|int_or_token|0
-        adjust_bottom: single|int_or_token|0
-        adjust_left: single|int_or_token|0
-        adjust_right: single|int_or_token|0
-        expire: single|secs_or_token|None
-        key: single|str|None
-        widget: single|str|None
-        events_when_added: list|event_posted|None
-        events_when_removed: list|event_posted|None
-    animations:
-        property: list|str|
-        value: list|str|
-        relative: single|bool_or_token|false
-        duration: single|secs_or_token|1
-        timing: single|enum(after_previous,with_previous)|after_previous
-        repeat: single|bool_or_token|false
-        easing: single|str|linear
-        step: single|float|0.0
-    bezier:
-        points: list|num_or_token|
-        thickness: single|float_or_token|1.0
-        cap: single|str|round
-        joint: single|str|round
-        cap_precision: single|int_or_token|10
-        joint_precision: single|int_or_token|10
-        close: single|bool_or_token|false
-        precision: single|int_or_token|180
-        rotation: single|float_or_token|0
-        scale: single|float_or_token|1.0
-    camera:
-        width: single|num_or_token|
-        height: single|num_or_token|
-        camera_index: single|int_or_token|-1
-    display:
-        width: single|num_or_token|
-        height: single|num_or_token|
-        source_display: single|str|dmd
-        effects: ignore
-    ellipse:
-        width: single|num_or_token|
-        height: single|num_or_token|
-        segments: single|int_or_token|180
-        angle_start: single|int_or_token|0
-        angle_end: single|int_or_token|360
-        rotation: single|float_or_token|0
-        scale: single|float_or_token|1.0
-    image:
-        fps: single|int_or_token|10
-        loops: single|int_or_token|-1
-        image: single|str|
-        auto_play: single|bool_or_token|true
-        start_frame: single|int_or_token|0
-        rotation: single|int_or_token|0
-        scale: single|float_or_token|1.0
-    line:
-        points: list|num_or_token|
-        thickness: single|float_or_token|1.0
-        cap: single|str|round
-        joint: single|str|round
-        cap_precision: single|int_or_token|10
-        joint_precision: single|int_or_token|10
-        close: single|bool_or_token|false
-    points:
-        points: list|num_or_token|
-        pointsize: single|float_or_token|1.0
-        rotation: single|int_or_token|0
-        scale: single|float_or_token|1.0
-    quad:
-        points: list|num_or_token|
-        rotation: single|int_or_token|0
-        scale: single|float_or_token|1.0
-    rectangle:
-        width: single|float_or_token|
-        height: single|float_or_token|
-        corner_radius: single|int_or_token|0
-        corner_segments: single|int_or_token|10
-        rotation: single|int_or_token|0
-        scale: single|float_or_token|1.0
-    segment_display_emulator:
-        name: single|str|None
-        text: single|str|
-        flash_mode: single|enum(off,all,match,mask)|off
-        flash_frequency: single|float_or_token|1.0
-        flash_mask: single|str|None
-        display_type: single|enum(7seg,8seg,14seg)|14seg
-        character_count: single|int_or_token|1
-        character_spacing: single|int_or_token|10
-        character_slant_angle: single|float_or_token|0.0
-        padding: single|int_or_token|20
-        background_color: single|kivycolor|000000ff
-        segment_off_color: single|kivycolor|4b4c4aff
-        segment_on_color: list|kivycolor|dd8217ff
-        segment_width: single|float_or_token|0.16
-        segment_interval: single|float_or_token|0.05
-        bevel_width: single|float_or_token|0.06
-        side_bevel_enabled: single|bool_or_token|true
-        dot_enabled: single|bool_or_token|false
-        comma_enabled: single|bool_or_token|false
-        character_map: dict|int:int|None
-        width: single|float_or_token|
-        height: single|float_or_token|
-        rotation: single|int_or_token|0
-        scale: single|float_or_token|1.0
-    text:
-        text: single|str|
-        font_size: single|num_or_token|15
-        font_name: ignore
-        bitmap_font: single|bool_or_token|false
-        font_kerning: single|bool_or_token|true
-        bold: single|bool_or_token|false
-        italic: single|bool_or_token|false
-        number_grouping: single|bool_or_token|false
-        min_digits: single|int_or_token|0
-        halign: single|str|center
-        valign: single|str|middle
-        rotation: single|int_or_token|0
-        scale: single|float_or_token|1.0
-        casing: single|str|None
-        outline_color: single|kivycolor|ffffffff
-        outline_width: single|int_or_token|0
-        # text_size: single|int_or_token|None  # sets width of bounding box, not font
-        # shorten: single|bool_or_token|None
-        # mipmap: single|bool_or_token|None
-        # markup: single|bool_or_token|None
-        # line_height: single|float_or_token|None
-        # max_lines: single|int_or_token|None
-        # strip: single|bool_or_token|None
-        # shorten_from: single|str|None
-        # split_str: single|str|None
-        # unicode_errors: single|str|None
-        # antialias: single|bool_or_token|false      # todo
-    text_input:
-        key: single|str|
-        initial_char: single|str|A
-        font_size: single|num_or_token|15
-        font_name: ignore
-        halign: single|str|center
-        valign: single|str|middle
-        shift_left_event: single|event_handler|sw_left_flipper
-        shift_right_event: single|event_handler|sw_right_flipper
-        select_event: single|event_handler|sw_start
-        abort_event: single|event_handler|sw_esc
-        force_complete_event: single|event_handler|None
-        block_events: list|event_handler|None
-        release_events: list|event_handler|None
-        bitmap_font: single|bool_or_token|false
-        bold: single|bool_or_token|false
-        italic: single|bool_or_token|false
-        number_grouping: single|bool_or_token|false
-        min_digits: single|int_or_token|0
-        max_chars: single|int_or_token|3
-        char_list: "single|str|ABCDEFGHIJKLMNOPQRSTUVWXYZ_- "
-        keep_selected_char: single|bool_or_token|true
-        dynamic_x: single|bool_or_token|true
-        dynamic_x_pad: single|int_or_token|0
-    triangle:
-        points: list|num_or_token|
-        rotation: single|int_or_token|0
-        scale: single|float_or_token|1.0
-    video:
-        video: single|str|
-        height: single|int_or_token|0
-        width: single|int_or_token|0
-        volume: single|float_or_token|1.0
-        auto_play: single|bool_or_token|true
-        end_behavior: single|enum(loop,pause,stop)|stop
-        control_events: list|subconfig(video_control_events)|None
-video_control_events:
-    action: single|enum(play,pause,stop,seek,volume,position)|
-    event: single|event_handler|
-    value: single|float|None
-
 window:
     __valid_in__: machine
     __type__: config

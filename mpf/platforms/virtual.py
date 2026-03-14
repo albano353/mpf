@@ -14,10 +14,11 @@ from mpf.platforms.interfaces.light_platform_interface import LightPlatformInter
 from mpf.platforms.interfaces.servo_platform_interface import ServoPlatformInterface
 from mpf.platforms.interfaces.switch_platform_interface import SwitchPlatformInterface
 from mpf.platforms.interfaces.stepper_platform_interface import StepperPlatformInterface
+from mpf.platforms.interfaces.shaker_platform_interface import ShakerPlatformInterface
 
 from mpf.core.platform import ServoPlatform, SwitchPlatform, DriverPlatform, AccelerometerPlatform, I2cPlatform, \
     DmdPlatform, RgbDmdPlatform, LightsPlatform, DriverConfig, SwitchConfig, SegmentDisplayPlatform, StepperPlatform, \
-    HardwareSoundPlatform, SwitchSettings, DriverSettings, RepulseSettings
+    HardwareSoundPlatform, SwitchSettings, DriverSettings, RepulseSettings, ShakerPlatform
 from mpf.core.utility_functions import Util
 from mpf.platforms.interfaces.driver_platform_interface import DriverPlatformInterface, PulseSettings, HoldSettings
 
@@ -25,7 +26,7 @@ from mpf.platforms.interfaces.driver_platform_interface import DriverPlatformInt
 # pylint: disable=too-many-ancestors,too-many-public-methods
 class VirtualHardwarePlatform(AccelerometerPlatform, I2cPlatform, ServoPlatform, LightsPlatform, SwitchPlatform,
                               DriverPlatform, DmdPlatform, RgbDmdPlatform, SegmentDisplayPlatform, StepperPlatform,
-                              HardwareSoundPlatform):
+                              HardwareSoundPlatform, ShakerPlatform):
 
     """Base class for the virtual hardware platform."""
 
@@ -138,6 +139,11 @@ class VirtualHardwarePlatform(AccelerometerPlatform, I2cPlatform, ServoPlatform,
                 self.hw_switches[switch.hw_switch.number] = switch.state ^ switch.invert
 
         return self.hw_switches
+
+    async def configure_shaker(self, number: str, config: Dict):
+        """Configure a shaker in platform."""
+        del config
+        return VirtualShaker(number)
 
     def _get_platforms(self):
         platforms = []
@@ -523,7 +529,9 @@ class VirtualLight(LightPlatformInterface):
 
     def __lt__(self, other):
         """Order lights by string."""
-        return self.number < other.number
+        self_address, self_offset = VirtualLight.split_light_address(self.number)
+        other_address, other_offset = VirtualLight.split_light_address(other.number)
+        return (self_address, int(self_offset)) < (other_address, int(other_offset))
 
 
 class VirtualServo(ServoPlatformInterface):
@@ -638,3 +646,27 @@ class VirtualDriver(DriverPlatformInterface):
         self.log.debug("Timed enabling driver: pulse for %sms, hold for %sms",
                        pulse_settings.duration, hold_settings.duration)
         self.state = "timed_enabled_" + str(pulse_settings.duration) + "_" + str(hold_settings.duration)
+
+
+class VirtualShaker(ShakerPlatformInterface):
+
+    """A virtual shaker object."""
+
+    __slots__ = ["state", "log", "__dict__", "number"]
+
+    def __init__(self, number) -> None:
+        """Initialize virtual shaker."""
+        self.number = number
+        self.log = logging.getLogger("VirtualShaker.{}".format(number))
+
+    def __repr__(self):
+        """Str representation."""
+        return "VirtualShaker.{}".format(self.number)
+
+    def pulse(self, duration_secs=None, power=None):
+        """Pulse virtual shaker."""
+        self.log.debug("Pulsing shaker for %ss at power: %s", duration_secs, power)
+
+    def stop(self):
+        """Pulse virtual shaker."""
+        self.log.debug("Stopping shaker")

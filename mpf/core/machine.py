@@ -61,6 +61,7 @@ if MYPY:   # pragma: no cover
     from mpf.devices.digital_output import DigitalOutput    # pylint: disable-msg=cyclic-import,unused-import
     from logging import Logger  # noqa
     from mpf.devices.autofire import AutofireCoil   # pylint: disable-msg=cyclic-import,unused-import
+    from mpf.devices.shaker import Shaker   # pylint: disable-msg=cyclic-import,unused-import
     from mpf.devices.stepper import Stepper     # pylint: disable-msg=cyclic-import,unused-import
     from mpf.config_players.show_player import ShowPlayer   # pylint: disable-msg=cyclic-import,unused-import
     from mpf.devices.dmd import Dmd     # pylint: disable-msg=cyclic-import,unused-import
@@ -167,6 +168,7 @@ class MachineController(LogMixin):
             self.autofire_coils = {}                    # type: Dict[str, AutofireCoil]
             self.motors = {}                            # type: Dict[str, Motor]
             self.digital_outputs = {}                   # type: Dict[str, DigitalOutput]
+            self.shakers = {}                           # type: Dict[str, Shaker]
             self.shows = {}                             # type: Dict[str, Show]
             self.shots = {}                             # type: Dict[str, Shot]
             self.shot_groups = {}                       # type: Dict[str, ShotGroup]
@@ -444,9 +446,9 @@ class MachineController(LogMixin):
         """
         python_version_info = sys.version_info
 
-        # if not (python_version_info[0] == 3 and python_version_info[1] in (5, 6, 7, 8, 9)):
+        # if not (python_version_info[0] == 3 and python_version_info[1] in (10, 11, 12, 13)):
         #     raise AssertionError("Incorrect Python version. MPF requires "
-        #                          "Python 3.5, 3.6, 3.7, 3.8 or 3.9. You have Python {}.{}.{}."
+        #                          "Python 3.10, 3.11, 3.12 or 3.13. You have Python {}.{}.{}."
         #                          .format(python_version_info[0], python_version_info[1],
         #                                  python_version_info[2]))
 
